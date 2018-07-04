@@ -27,7 +27,7 @@ export default class Home extends Component {
   }
 
   updateViewport(viewport) {
-    this.setState((prevState) => ({ ...prevState, ...viewport }))
+    this.setState((prevState) => ({ viewport: { ...prevState.viewport, ...viewport } }))
   }
 
   render() {

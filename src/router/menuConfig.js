@@ -1,30 +1,15 @@
-const headerMenuConfig = [
-  {
-    name: '首页',
-    path: '/',
-    icon: 'home',
-  },
-  {
-    name: '反馈',
-    path: 'https://github.com/alibaba/ice',
-    external: true,
-    newWindow: true,
-    icon: 'message',
-  },
-  {
-    name: '帮助',
-    path: 'https://alibaba.github.io/ice',
-    external: true,
-    newWindow: true,
-    icon: 'bangzhu',
-  },
-]
+import Home from '@material-ui/icons/Home'
+import Dashboard from '@material-ui/icons/Dashboard'
+import Home from 'pages/Home'
+import NotFound from 'pages/NotFound'
 
 const sideMenuConfig = [
   {
-    name: 'Home',
     path: '/',
-    icon: 'home',
+    sidebarName: 'Home',
+    navbarName: 'Home',
+    icon: Home,
+    component: Home,
   },
   {
     name: 'Test',

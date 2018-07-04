@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import BasicNotFound from '../../components/BasicNotFound'
+import BasicNotFound from 'components/BasicNotFound'
 import './NotFound.scss'
 
-export default class NotFound extends Component {
+class NotFound extends Component {
   static displayName = 'NotFound';
 
   constructor(props) {
@@ -18,3 +18,5 @@ export default class NotFound extends Component {
     )
   }
 }
+
+export default NotFound
