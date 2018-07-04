@@ -1,15 +1,10 @@
-import Home from '@material-ui/icons/Home'
-import Dashboard from '@material-ui/icons/Dashboard'
-import Home from 'pages/Home'
-import NotFound from 'pages/NotFound'
-
 const sideMenuConfig = [
   {
+    name: 'Home',
     path: '/',
-    sidebarName: 'Home',
-    navbarName: 'Home',
-    icon: Home,
-    component: Home,
+    icon: 'home',
+    newWindow: false,
+    external: false,
   },
   {
     name: 'Test',
@@ -19,13 +14,17 @@ const sideMenuConfig = [
       {
         name: 'Page1',
         path: '/test/page1',
+        newWindow: false,
+        external: false,
       },
       {
         name: 'page2',
         path: '/test/page2',
+        newWindow: false,
+        external: false,
       },
     ],
   },
 ]
 
-export { headerMenuConfig, sideMenuConfig }
+export default sideMenuConfig
