@@ -1,16 +1,16 @@
 import Home from 'pages/Home'
 import NotFound from 'pages/NotFound'
-import AsideLayout from 'layouts/AsideLayout'
+import Layout from 'components/Layout'
 
 const routerConfig = [
   {
     path: '/',
-    layout: AsideLayout,
+    layout: Layout,
     component: Home,
   },
   {
     path: '*',
-    layout: AsideLayout,
+    layout: Layout,
     component: NotFound,
   },
 ]

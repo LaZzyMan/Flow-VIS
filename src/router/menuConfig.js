@@ -20,9 +20,9 @@ const headerMenuConfig = [
   },
 ]
 
-const asideMenuConfig = [
+const sideMenuConfig = [
   {
-    name: 'Dashboard',
+    name: 'Home',
     path: '/',
     icon: 'home',
   },
@@ -43,4 +43,4 @@ const asideMenuConfig = [
   },
 ]
 
-export { headerMenuConfig, asideMenuConfig }
+export { headerMenuConfig, sideMenuConfig }

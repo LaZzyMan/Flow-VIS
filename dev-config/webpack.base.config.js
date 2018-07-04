@@ -74,7 +74,7 @@ module.exports = {
       router: path.join(__dirname, '../src/router'),
       actions: path.join(__dirname, '../src/redux/actions'),
       reducers: path.join(__dirname, '../src/redux/reducers'),
-      layouts: path.join(__dirname, '../src/layouts'),
+      icons: path.join(__dirname, '../src/icons'),
     },
   },
   optimization: {
