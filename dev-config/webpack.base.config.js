@@ -70,10 +70,11 @@ module.exports = {
   resolve: {
     alias: {
       pages: path.join(__dirname, '../src/pages'),
-      component: path.join(__dirname, '../src/component'),
+      components: path.join(__dirname, '../src/components'),
       router: path.join(__dirname, '../src/router'),
       actions: path.join(__dirname, '../src/redux/actions'),
       reducers: path.join(__dirname, '../src/redux/reducers'),
+      layouts: path.join(__dirname, '../src/layouts'),
     },
   },
   optimization: {
@@ -90,11 +91,11 @@ module.exports = {
     },
   },
   plugins: [
-    new ExtractTextPlugin('styles.css'),
+    new ExtractTextPlugin('css/styles.css'),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: path.join(__dirname, '../src/index.ejs'),
-      title: 'TS Management',
+      template: path.join(__dirname, '../public/index.ejs'),
+      title: 'Flow VIS',
       favicon: path.join(__dirname, '../src/icons/favicon.ico'),
       appMountId: 'app',
       minify: {

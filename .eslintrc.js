@@ -36,6 +36,7 @@ module.exports = {
       'react/prop-types': 0,
       'react/jsx-first-prop-new-line': 0,
       'linebreak-style': [
+        0,
         'error',
         'windows'
       ]
