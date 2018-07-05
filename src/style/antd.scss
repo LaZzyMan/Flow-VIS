@@ -1,0 +1,17 @@
+@import './variables.scss';
+
+.ant-layout {
+    height: 100%;
+    width: 100%;
+}
+.ant-layout-content {
+    margin: 0;
+    padding: 0;
+}
+.ant-layout-sider-children {
+    background: linear-gradient(to left, $white-0, $white-3);
+    // width: 20vw!important;
+}
+.ant-menu-item {
+    margin-top: 0!important;
+}

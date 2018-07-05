@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <title><%= htmlWebpackPlugin.options.title %></title>
     <link rel="shortcut icon" href="<%= htmlWebpackPlugin.files.favicon %>">
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.css' rel='stylesheet' />
   </head>
   <body>
-    <div id="<%= htmlWebpackPlugin.options.appMountId %>"></div>
+    <div id="<%= htmlWebpackPlugin.options.appMountId %>" style="height:100%; width:100%;"></div>
 
     <!-- webpack builds are automatically injected -->
   </body>

@@ -17,7 +17,7 @@ module.exports = merge(baseConfig, {
     ],
   },
   output: {
-    path: path.join(__dirname, '../dist'),
+    path: path.join(__dirname, '../dist/js'),
     filename: 'bundle.[hash].js',
     chunkFilename: '[name].[chunkhash].js',
     publicPath: '/',

@@ -6,6 +6,8 @@
     ],
     "plugins": [
         "react-hot-loader/babel",
-        "syntax-dynamic-import"
+        "transform-decorators-legacy",
+        "syntax-dynamic-import",
+        ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }]
     ]
   }

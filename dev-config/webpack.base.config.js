@@ -7,7 +7,8 @@ module.exports = {
     rules: [
       {
         test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'postcss-loader'],
+        // use: ['style-loader', 'css-loader', 'postcss-loader'],
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.css$/,
@@ -17,14 +18,14 @@ module.exports = {
         }),
       },
       {
-        test: /\.jsx?$/,
+        test: /\.jsx$/,
         use: ['babel-loader?cacheDirectory=true'],
         exclude: /node_modules/,
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: ['babel-loader', 'eslint-loader'],
+        loader: 'babel-loader',
       },
       {
         test: /\.svg$/,
@@ -45,7 +46,7 @@ module.exports = {
             name: 'imgs/[name]--[folder].[ext]',
           },
         },
-        exclude: [path.join(__dirname, '../src/icons')],
+        // exclude: [path.join(__dirname, '../src/icons')],
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
@@ -70,10 +71,11 @@ module.exports = {
   resolve: {
     alias: {
       pages: path.join(__dirname, '../src/pages'),
-      component: path.join(__dirname, '../src/component'),
+      components: path.join(__dirname, '../src/components'),
       router: path.join(__dirname, '../src/router'),
       actions: path.join(__dirname, '../src/redux/actions'),
       reducers: path.join(__dirname, '../src/redux/reducers'),
+      style: path.join(__dirname, '../src/style'),
     },
   },
   optimization: {
@@ -93,8 +95,8 @@ module.exports = {
     new ExtractTextPlugin('styles.css'),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: path.join(__dirname, '../src/index.ejs'),
-      title: 'TS Management',
+      template: path.join(__dirname, '../public/index.ejs'),
+      title: 'Flow VIS',
       favicon: path.join(__dirname, '../src/icons/favicon.ico'),
       appMountId: 'app',
       minify: {
@@ -111,7 +113,4 @@ module.exports = {
       },
     }),
   ],
-  eslint: {
-    configFile: path.join(__dirname, '../.eslintrc.js'),
-  },
 }
