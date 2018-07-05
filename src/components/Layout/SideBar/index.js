@@ -17,58 +17,6 @@ class SideBar extends Component {
   render() {
     const { collapsed, location } = this.props
     const { pathname } = location
-    const menu = sideMenuConfig.map((nav, index) => {
-      if (nav.children && nav.children.length > 0) {
-        return (
-          <SubMenu
-            key={`sub${index}`}
-            title={(
-              <span>
-                {nav.icon ? (<Icon type={nav.icon} />) : null}
-                <span>{nav.name}</span>
-              </span>
-              )}
-          >
-            {nav.children.map((item) => {
-              const linkProps = {}
-              if (item.newWindow) {
-                linkProps.href = item.path
-                linkProps.target = '_blank'
-              } else if (item.external) {
-                linkProps.href = item.path
-              } else {
-                linkProps.to = item.path
-              }
-              return (
-                <Menu.Item key={item.path}>
-                  <Link {...linkProps}>{item.name}</Link>
-                </Menu.Item>
-              )
-            })}
-          </SubMenu>
-        )
-      }
-      const linkProps = {}
-      if (nav.newWindow) {
-        linkProps.href = nav.path
-        linkProps.target = '_blank'
-      } else if (nav.external) {
-        linkProps.href = nav.path
-      } else {
-        linkProps.to = nav.path
-      }
-      return (
-        <Menu.Item key={nav.path}>
-          <Link {...linkProps}>
-            <span>
-              {nav.icon ? (<Icon type={nav.icon} />) : null}
-              <span>{nav.name}</span>
-            </span>
-          </Link>
-        </Menu.Item>
-      )
-    })
-    console.log(menu)
     return (
       <Sider
         trigger={null}
@@ -76,7 +24,7 @@ class SideBar extends Component {
         collapsed={collapsed}
       >
         <div className="logo" />
-        <Menu theme="dark"
+        <Menu theme="light"
           mode="inline"
           selectedKeys={[pathname]}
           defaultSelectedKeys={[pathname]}

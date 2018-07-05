@@ -8627,6 +8627,10 @@ tty-browserify@0.0.0:
   version "0.0.0"
   resolved "http://registry.npm.taobao.org/tty-browserify/download/tty-browserify-0.0.0.tgz#a157ba402da24e9bf957f9aa69d524eed42901a6"
 
+tween.js@^16.6.0:
+  version "16.6.0"
+  resolved "http://registry.npm.taobao.org/tween.js/download/tween.js-16.6.0.tgz#739104c9336cc4f11ee53f9ce7cede51e6723624"
+
 type-check@~0.3.2:
   version "0.3.2"
   resolved "http://registry.npm.taobao.org/type-check/download/type-check-0.3.2.tgz#5884cab512cf1d355e3fb784f30804b2b520db72"

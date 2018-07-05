@@ -9,7 +9,7 @@ const sideMenuConfig = [
   {
     name: 'Test',
     path: '/test',
-    icon: 'yonghu',
+    icon: 'smile-o',
     children: [
       {
         name: 'Page1',

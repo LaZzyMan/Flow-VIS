@@ -30,10 +30,7 @@ class AppLayout extends Component {
         <SideBar collapsed={collapsed} match={match} location={location} />
         <Layout>
           <Header collapsed={collapsed} onClickHandle={this.toggle} />
-          <Content style={{
-            margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280,
-          }}
-          >
+          <Content>
             {children}
           </Content>
         </Layout>

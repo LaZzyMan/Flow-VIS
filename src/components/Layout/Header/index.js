@@ -13,7 +13,7 @@ class MyHeader extends Component {
   render() {
     const { collapsed, onClickHandle } = this.props
     return (
-      <Header style={{ background: '#fff', padding: 0 }}>
+      <Header style={{ background: '#fff', padding: 0 }} className="layout-header">
         <Icon
           className="trigger"
           type={collapsed ? 'menu-unfold' : 'menu-fold'}
