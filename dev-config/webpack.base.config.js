@@ -7,7 +7,8 @@ module.exports = {
     rules: [
       {
         test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'postcss-loader'],
+        // use: ['style-loader', 'css-loader', 'postcss-loader'],
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.css$/,
@@ -74,6 +75,7 @@ module.exports = {
       router: path.join(__dirname, '../src/router'),
       actions: path.join(__dirname, '../src/redux/actions'),
       reducers: path.join(__dirname, '../src/redux/reducers'),
+      style: path.join(__dirname, '../src/style'),
     },
   },
   optimization: {

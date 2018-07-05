@@ -29,7 +29,7 @@ export default class Home extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('resize', this.onResize)
+    window.addEventListener('resize', this.onResize.bind(this))
     this.onResize()
     animate()
   }

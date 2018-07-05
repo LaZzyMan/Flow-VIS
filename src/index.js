@@ -1,7 +1,7 @@
 /* eslint-disable */
 import ReactDom from 'react-dom'
 import Router from 'router/router'
-import './style/antd.scss'
+import 'style/antd.scss'
 import React from 'react'
 import store from './redux/store'
 
