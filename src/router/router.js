@@ -1,62 +1,90 @@
-import {
-  BrowserRouter as Router, Route, Switch, Link,
-} from 'react-router-dom'
-import Loadable from 'react-loadable'
+import { HashRouter as Router } from 'react-router-dom'
+import { Switch, Route } from 'react-router'
 import React from 'react'
+import routerConfig from './routerConfig'
 
-const Loading = () => (
-  <div>
-Loading...
-  </div>
-)
+function recursiveRouterConfig(config = []) {
+  const routeMap = []
+  config.forEach((item) => {
+    const route = {
+      path: item.path,
+      layout: item.layout,
+      component: item.component,
+    }
+    if (Array.isArray(item.children)) {
+      route.childRoutes = recursiveRouterConfig(item.children)
+    }
+    routeMap.push(route)
+  })
+  return routeMap
+}
 
-const Home = Loadable({ loader: () => import('pages/Home/Home'), loading: Loading })
-const Page1 = Loadable({ loader: () => import('pages/Page1/Page1'), loading: Loading })
-const Counter = Loadable({ loader: () => import('pages/Counter/Counter'), loading: Loading })
-const UserInfo = Loadable({ loader: () => import('pages/UserInfo/UserInfo'), loading: Loading })
+function renderRouterConfig(container, router, contextPath) {
+  const routeChildren = []
+  const renderRoute = (routeContainer, routeItem, routeContextPath) => {
+    let routePath
+    if (!routeItem.path) {
+      // eslint-disable-next-line
+      console.error('route must has `path`');
+    } else if (routeItem.path === '/' || routeItem.path === '*') {
+      routePath = routeItem.path
+    } else {
+      routePath = `/${routeContextPath}/${routeItem.path}`.replace(/\/+/g, '/')
+    }
 
-// const LoadableComponent = Loadable({
-//   loader: (component) => (props) => <Component {...props} />,
-//   loading: Loading
-// })
+    if (routeItem.layout && routeItem.component) {
+      routeChildren.push(
+        <Route
+          key={routePath}
+          exact
+          path={routePath}
+          render={(props) => React.createElement(
+            routeItem.layout,
+            props,
+            React.createElement(routeItem.component, props),
+          )}
+        />,
+      )
+    } else if (routeContainer && routeItem.component) {
+      // 使用上层节点作为 container
+      routeChildren.push(
+        <Route
+          key={routePath}
+          exact
+          path={routePath}
+          render={(props) => React.createElement(
+            routeContainer,
+            props,
+            React.createElement(routeItem.component, props),
+          )}
+        />,
+      )
+    } else {
+      routeChildren.push(
+        <Route
+          key={routePath}
+          exact
+          path={routePath}
+          component={routeItem.component}
+        />,
+      )
+    }
+    // 存在子路由，递归当前路径，并添加到路由中
+    if (Array.isArray(routeItem.childRoutes)) {
+      routeItem.childRoutes.forEach((r) => {
+        // 递归传递当前 route.component 作为子节点的 container
+        renderRoute(routeItem.component, r, routePath)
+      })
+    }
+  }
 
-const getRouter = () => (
-  <Router>
-    <div>
-      <ul>
-        <li>
-          <Link to="/">
+  router.forEach((r) => {
+    renderRoute(container, r, contextPath)
+  })
 
-首页
-          </Link>
-        </li>
-        <li>
-          <Link to="/page1">
+  return <Switch>{routeChildren}</Switch>
+}
 
-Page1
-          </Link>
-        </li>
-        <li>
-          <Link to="/counter">
-
-Counter
-          </Link>
-        </li>
-        <li>
-          <Link to="/userinfo">
-
-UserInfo
-          </Link>
-        </li>
-      </ul>
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route path="/page1" component={Page1} />
-        <Route path="/counter" component={Counter} />
-        <Route path="/userinfo" component={UserInfo} />
-      </Switch>
-    </div>
-  </Router>
-)
-
-export default getRouter
+const routerWithReactRouter = recursiveRouterConfig(routerConfig)
+const routeChildren = renderRouterConfig(null, routerWithReactRouter, '/')
+export default <Router>{routeChildren}</Router>
