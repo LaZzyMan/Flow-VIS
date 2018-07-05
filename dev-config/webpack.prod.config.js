@@ -12,7 +12,7 @@ module.exports = merge(baseConfig, {
     ],
   },
   output: {
-    path: path.join(__dirname, '../build/js'),
+    path: path.join(__dirname, '../build'),
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',
     publicPath: '/',

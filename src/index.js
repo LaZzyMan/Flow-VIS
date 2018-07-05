@@ -1,25 +1,19 @@
 /* eslint-disable */
 import ReactDom from 'react-dom'
-import { getRouter, AppContainer, Provider } from 'router/router'
+import Router from 'router/router'
 import React from 'react'
 import store from './redux/store'
 
-renderWithHotReload(getRouter())
+renderWithHotReload(Router)
 
 if (module.hot) {
   module.hot.accept('./router/router', () => {
-    const getRouter = require('router/router').default
-    renderWithHotReload(getRouter())
+    const Router = require('router/router').default
+    renderWithHotReload(Router)
   })
 }
 
 function renderWithHotReload(RootElement) {
-  ReactDom.render(
-    <AppContainer>
-      <Provider store={store}>
-        {RootElement}
-      </Provider>
-    </AppContainer>,
-    document.getElementById('app'),
+  ReactDom.render(RootElement, document.getElementById('app'),
   )
 }

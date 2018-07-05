@@ -15,6 +15,9 @@ class AppLayout extends Component {
     }
   }
 
+  componentDidMount() {
+  }
+
   toggle = () => {
     this.setState(prevState => ({ collapsed: !prevState.collapsed }))
   }

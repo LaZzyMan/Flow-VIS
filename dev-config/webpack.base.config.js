@@ -17,14 +17,14 @@ module.exports = {
         }),
       },
       {
-        test: /\.jsx?$/,
+        test: /\.jsx$/,
         use: ['babel-loader?cacheDirectory=true'],
         exclude: /node_modules/,
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: ['babel-loader', 'eslint-loader'],
+        loader: 'babel-loader',
       },
       {
         test: /\.svg$/,
@@ -91,7 +91,7 @@ module.exports = {
     },
   },
   plugins: [
-    new ExtractTextPlugin('css/styles.css'),
+    new ExtractTextPlugin('styles.css'),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.join(__dirname, '../public/index.ejs'),
@@ -112,7 +112,4 @@ module.exports = {
       },
     }),
   ],
-  eslint: {
-    configFile: path.join(__dirname, '../.eslintrc.js'),
-  },
 }
