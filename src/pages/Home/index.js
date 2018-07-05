@@ -18,10 +18,11 @@ export default class Home extends Component {
         height: 500,
         longitude: 120.68,
         latitude: 28.0,
-        zoom: 4,
+        zoom: 12,
         maxZoom: 16,
         pitch: 37.11535300402728,
         bearing: -0.6424747174301046,
+        interactive: true,
       },
     }
     autobind(this)
@@ -34,8 +35,6 @@ export default class Home extends Component {
   }
 
   onResize() {
-    console.log(this)
-    console.log(this.updateViewport)
     this.updateViewport({
       width: window.innerWidth,
       height: window.innerHeight,

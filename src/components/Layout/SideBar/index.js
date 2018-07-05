@@ -23,7 +23,7 @@ class SideBar extends Component {
         collapsible
         collapsed={collapsed}
       >
-        <div className="logo" />
+        <div className="logo"><span style={{ marginLeft: '2vh' }}>Flow VIS</span></div>
         <Menu theme="light"
           mode="inline"
           selectedKeys={[pathname]}

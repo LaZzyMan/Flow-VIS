@@ -45,7 +45,7 @@ module.exports = {
             name: 'imgs/[name]--[folder].[ext]',
           },
         },
-        exclude: [path.join(__dirname, '../src/icons')],
+        // exclude: [path.join(__dirname, '../src/icons')],
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
@@ -74,7 +74,6 @@ module.exports = {
       router: path.join(__dirname, '../src/router'),
       actions: path.join(__dirname, '../src/redux/actions'),
       reducers: path.join(__dirname, '../src/redux/reducers'),
-      icons: path.join(__dirname, '../src/icons'),
     },
   },
   optimization: {

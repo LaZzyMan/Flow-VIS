@@ -30,7 +30,7 @@ class BasicNotFound extends Component {
       <div className="basic-not-found">
         <div style={styles.notfoundContent}>
           <img
-            src="../../icons/404.png"
+            src={require('../../icons/404.png')}
             style={styles.imgNotfound}
             alt="页面不存在"
           />

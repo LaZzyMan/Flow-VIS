@@ -41,6 +41,7 @@ module.exports = {
         'error',
         'windows'
       ],
+      'global-require': 0,
     },
     settings: {
       'import/core-modules': [

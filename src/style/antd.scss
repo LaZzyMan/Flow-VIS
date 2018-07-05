@@ -5,5 +5,12 @@
 .ant-layout-content {
     margin: 0;
     padding: 0;
-    
+
+}
+.ant-layout-sider-children {
+    background: linear-gradient(right, rgb(255, 255, 255), rgb(220, 220, 220));
+    // width: 20vw!important;
+}
+.ant-menu-item {
+    margin-top: 0!important;
 }
