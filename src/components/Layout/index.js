@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { withRouter } from 'react-router'
 import Header from './Header'
 import SideBar from './SideBar'
+import { toggleResize } from '../../utils'
 
 const { Content } = Layout
 
@@ -20,6 +21,7 @@ class AppLayout extends Component {
 
   toggle = () => {
     this.setState(prevState => ({ collapsed: !prevState.collapsed }))
+    toggleResize()
   }
 
   render() {

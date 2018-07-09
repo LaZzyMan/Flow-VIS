@@ -3,9 +3,9 @@ import ReactMapGL from 'react-map-gl'
 import autobind from 'react-autobind'
 import DeckGL, { GeoJsonLayer, MapController } from 'deck.gl'
 import TWEEN from 'tween.js'
+import PropTypes from 'prop-types'
 import { hex2Rgba } from '../../utils'
 import './MapView.scss'
-import PropTypes from 'prop-types'
 
 const roadData = require('../../data/road_selected.geojson')
 const station = require('../../data/site_point_selected.geojson')

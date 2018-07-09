@@ -20,3 +20,10 @@ export function hex2Rgba(hex, opacity) {
     opacity,
   ]
 }
+
+// 触发窗口resize
+export function toggleResize() {
+  const e = document.createEvent('Event')
+  e.initEvent('resize', true, true)
+  window.dispatchEvent(e)
+}
