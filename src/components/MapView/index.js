@@ -4,6 +4,8 @@ import autobind from 'react-autobind'
 import DeckGL, { GeoJsonLayer, MapController } from 'deck.gl'
 import TWEEN from 'tween.js'
 import { hex2Rgba } from '../../utils'
+import './MapView.scss'
+import PropTypes from 'prop-types'
 
 const roadData = require('../../data/road_selected.geojson')
 const station = require('../../data/site_point_selected.geojson')
@@ -49,9 +51,10 @@ class MapView extends Component {
   }
 
   onResize() {
+    const contentElement = document.getElementById('layout-content')
     this.updateViewport({
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: contentElement.clientWidth,
+      height: contentElement.clientHeight,
     })
   }
 
@@ -61,8 +64,9 @@ class MapView extends Component {
 
   render() {
     const { viewport } = this.state
+    const { settings } = this.props
     const layers = [
-      new GeoJsonLayer({
+      settings[1].enable && new GeoJsonLayer({
         id: 'voronoi-layer',
         data: voronoi,
         pickable: true,
@@ -74,7 +78,7 @@ class MapView extends Component {
         getLineColor: hex2Rgba('#3b8d99', 255),
         getLineWidth: 1,
       }),
-      new GeoJsonLayer({
+      settings[2].enable && new GeoJsonLayer({
         id: 'road-layer',
         data: roadData,
         pickable: true,
@@ -86,7 +90,7 @@ class MapView extends Component {
         lineWidthMinPixels: 0.5,
         lineWidthMaxPixels: 2,
       }),
-      new GeoJsonLayer({
+      settings[0].enable && new GeoJsonLayer({
         id: 'station-layer',
         data: station,
         pickable: true,
@@ -97,6 +101,7 @@ class MapView extends Component {
     ]
     return (
       <ReactMapGL
+        className="map-view"
         {...viewport}
         mapStyle="mapbox://styles/hideinme/cj9ydelgj7jlo2su9opjkbjsu"
         mapboxApiAccessToken={MAPBOX_TOKEN}
@@ -106,6 +111,10 @@ class MapView extends Component {
       </ReactMapGL>
     )
   }
+}
+
+MapView.propTypes = {
+  settings: PropTypes.array.isRequired,
 }
 
 export default MapView

@@ -11,7 +11,7 @@ class AppLayout extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      collapsed: false,
+      collapsed: true,
     }
   }
 
@@ -30,7 +30,7 @@ class AppLayout extends Component {
         <SideBar collapsed={collapsed} match={match} location={location} />
         <Layout>
           <Header collapsed={collapsed} onClickHandle={this.toggle} />
-          <Content>
+          <Content id="layout-content">
             {children}
           </Content>
         </Layout>
