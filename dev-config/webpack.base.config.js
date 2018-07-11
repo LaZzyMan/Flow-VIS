@@ -30,7 +30,13 @@ module.exports = {
       {
         test: /\.(json|geojson)$/,
         include: [path.join(__dirname, '../src/data')],
-        loader: 'json-loader',
+        use: {
+          loader: 'url-loader',
+          query: {
+            limit: 10000,
+            name: 'data/[name].[ext]',
+          },
+        },
       },
       {
         test: /\.svg$/,

@@ -5483,15 +5483,6 @@ luma.gl@^5.3.0:
     seer "^0.2.4"
     webgl-debug "^2.0.0"
 
-luma.gl@^6.0.0-alpha.2:
-  version "6.0.0-alpha.2"
-  resolved "http://registry.npm.taobao.org/luma.gl/download/luma.gl-6.0.0-alpha.2.tgz#74d411793e830e058f2eb8a4ff0a115d1c1968a7"
-  dependencies:
-    math.gl "^2.0.0"
-    probe.gl "^1.0.0"
-    seer "^0.2.4"
-    webgl-debug "^2.0.0"
-
 magic-string@^0.22.4:
   version "0.22.5"
   resolved "http://registry.npm.taobao.org/magic-string/download/magic-string-0.22.5.tgz#8e9cf5afddf44385c1da5bc2a6a0dbd10b03657e"

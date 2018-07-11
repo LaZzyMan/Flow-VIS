@@ -68,7 +68,6 @@
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "deck.gl": "^5.3.2",
-    "luma.gl": "^6.0.0-alpha.2",
     "react": "^16.3.2",
     "react-autobind": "^1.0.6",
     "react-dom": "^16.3.2",

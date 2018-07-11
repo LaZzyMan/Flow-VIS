@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import autobind from 'react-autobind'
 import MapView from 'components/MapView'
 import DashBoard from 'components/DashBoard'
-import toggleResize from '../../utils'
+import { toggleResize } from '../../utils'
 
 
 export default class Home extends Component {
