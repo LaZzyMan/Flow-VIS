@@ -27,17 +27,15 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'babel-loader',
       },
-      // {
-      //   test: /\.(json|geojson)$/,
-      //   include: [path.join(__dirname, '../src/data')],
-      //   use: {
-      //     loader: 'url-loader',
-      //     query: {
-      //       limit: 10000,
-      //       name: 'data/[name].[ext]',
-      //     },
-      //   },
-      // },
+      {
+        type: 'javascript/auto',
+        test: /\.json$/,
+        include: [path.join(__dirname, '../src/mock/data')],
+        use: {
+          loader: 'file-loader',
+          options: { name: 'data/[name].[ext]' },
+        },
+      },
       {
         test: /\.svg$/,
         use: {

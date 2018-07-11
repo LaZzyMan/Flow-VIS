@@ -1,5 +1,4 @@
-/* eslint-disable */
-const data = {
+{
 "type": "FeatureCollection",
 "name": "site_polygon_selected",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
@@ -1067,4 +1066,4 @@ const data = {
 { "type": "Feature", "properties": { "site_id": 25688 }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 120.715682621970672, 28.009517461746501 ], [ 120.716490661502277, 28.011314925442917 ], [ 120.716072829839163, 28.012280594085073 ], [ 120.711564057913463, 28.011366036315927 ], [ 120.711751184622585, 28.009648143364299 ], [ 120.7148, 28.008654441762385 ], [ 120.715682621970672, 28.009517461746501 ] ] ] } }
 ]
 }
-export default () => { return data }
+

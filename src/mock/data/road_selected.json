@@ -1,5 +1,4 @@
-/* eslint-disable */
-const data = {
+{
 "type": "FeatureCollection",
 "name": "road",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4130" } },
@@ -9129,6 +9128,3 @@ const data = {
 ]
 }
 
-export default () => {
-  return data
-}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ReactMapGL from 'react-map-gl'
 import autobind from 'react-autobind'
-import { Spin } from 'antd'
+import { message } from 'antd'
 import DeckGL, { GeoJsonLayer, MapController } from 'deck.gl'
 import { isWebGL2, registerShaderModules } from 'luma.gl'
 import TWEEN from 'tween.js'
@@ -47,18 +47,17 @@ class MapView extends Component {
         maxZoom: 16,
         pitch: 37.11535300402728,
         bearing: -0.6424747174301046,
-        interactive: true,
+        // interactive: true,
       },
       webGL2Supported: true,
-      isLoading: true,
-      roadData: null,
-      station: null,
-      voronoi: null,
+      data: null,
     }
     autobind(this)
   }
 
   componentDidMount() {
+    message.loading('Loading Data..', 0)
+      .then(() => message.success('Loading finished', 2.5))
     window.addEventListener('resize', this.onResize.bind(this))
     this.onResize()
     this.loadData()
@@ -79,31 +78,19 @@ class MapView extends Component {
   }
 
   loadData = () => {
-    const { isLoading } = this.state
-    getRoad({}).then(response => {
-      this.setState({ roadData: response.data })
-      if (isLoading) {
-        this.setState({ isLoading: false })
-      }
-    }).catch(() => {
-      if (isLoading) {
-        this.setState({ isLoading: false })
-      }
-    })
-    getStation({}).then(response => {
-      this.setState({ station: response.data })
-    }).catch(() => {
-      if (isLoading) {
-        this.setState({ isLoading: false })
-      }
-    })
-    getPolygon({}).then(response => {
-      this.setState({ voronoi: response.data })
-    }).catch(() => {
-      if (isLoading) {
-        this.setState({ isLoading: false })
-      }
-    })
+    Promise.all([getRoad({}), getStation({}), getPolygon({})])
+      .then(([roads, stations, polygons]) => {
+        message.destroy()
+        this.setState({
+          data: {
+            roadData: roads,
+            voronoi: polygons,
+            station: stations,
+          },
+        })
+      }).catch(() => {
+        message.destroy()
+      })
   }
 
   updateViewport = (viewport) => {
@@ -112,7 +99,7 @@ class MapView extends Component {
 
   render() {
     const {
-      viewport, webGL2Supported, isLoading, roadData, station, voronoi,
+      viewport, webGL2Supported, data,
     } = this.state
     if (!webGL2Supported) {
       return (
@@ -128,6 +115,10 @@ class MapView extends Component {
         </div>
       )
     }
+    if (!data) {
+      return null
+    }
+    const { roadData, station, voronoi } = data
     const { settings } = this.props
     const layers = [
       settings[1].enable && voronoi !== null && new GeoJsonLayer({
@@ -164,22 +155,24 @@ class MapView extends Component {
       }),
     ]
     return (
-      <Spin spinning={isLoading}>
-        <ReactMapGL
-          className="map-view"
+
+      <ReactMapGL
+        className="map-view"
+        {...viewport}
+        mapStyle="mapbox://styles/hideinme/cj9ydelgj7jlo2su9opjkbjsu"
+        mapboxApiAccessToken={MAPBOX_TOKEN}
+        dragRotate
+        onViewportChange={v => this.updateViewport(v)}
+      >
+        <DeckGL
           {...viewport}
-          mapStyle="mapbox://styles/hideinme/cj9ydelgj7jlo2su9opjkbjsu"
-          mapboxApiAccessToken={MAPBOX_TOKEN}
-          onViewportChange={v => this.updateViewport(v)}
-        >
-          <DeckGL
-            {...viewport}
-            layers={layers}
-            controller={MapController}
-            onWebGLInitialized={this.onWebGLInitialized}
-          />
-        </ReactMapGL>
-      </Spin>
+          layers={layers}
+          controller={MapController}
+          onWebGLInitialized={this.onWebGLInitialized}
+          useDevicePixels
+        />
+      </ReactMapGL>
+
     )
   }
 }

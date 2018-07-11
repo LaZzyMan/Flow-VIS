@@ -1,7 +1,8 @@
 import Mock from 'mockjs'
-import roadData from './data/road_selected'
-import stationData from './data/site_point_selected'
-import voronoiData from './data/site_polygon_selected'
+
+const roadData = require('./data/road_selected.json')
+const stationData = require('./data/site_point_selected.json')
+const voronoiData = require('./data/site_polygon_selected.json')
 
 // Mock.setup({
 //     timeout: '10-300'
