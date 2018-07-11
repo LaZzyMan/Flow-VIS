@@ -35,6 +35,7 @@ module.exports = {
       'import/no-unresolved': 0,
       'react/prop-types': 0,
       'react/jsx-first-prop-new-line': 0,
+      'react/forbid-prop-types': 0,
       'react/no-array-index-key': 0,
       'linebreak-style': [
         0,
