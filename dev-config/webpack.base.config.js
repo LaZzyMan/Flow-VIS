@@ -28,6 +28,11 @@ module.exports = {
         loader: 'babel-loader',
       },
       {
+        test: /\.(json|geojson)$/,
+        include: [path.join(__dirname, '../src/data')],
+        loader: 'json-loader',
+      },
+      {
         test: /\.svg$/,
         use: {
           loader: 'svg-sprite-loader',

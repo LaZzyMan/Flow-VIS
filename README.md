@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/LaZzyMan/Flow-VIS.svg?branch=develop)](https://travis-ci.org/LaZzyMan/Flow-VIS)
 # Flow-VIS
 
 ## 使用
