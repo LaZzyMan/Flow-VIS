@@ -27,17 +27,17 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'babel-loader',
       },
-      {
-        test: /\.(json|geojson)$/,
-        include: [path.join(__dirname, '../src/data')],
-        use: {
-          loader: 'url-loader',
-          query: {
-            limit: 10000,
-            name: 'data/[name].[ext]',
-          },
-        },
-      },
+      // {
+      //   test: /\.(json|geojson)$/,
+      //   include: [path.join(__dirname, '../src/data')],
+      //   use: {
+      //     loader: 'url-loader',
+      //     query: {
+      //       limit: 10000,
+      //       name: 'data/[name].[ext]',
+      //     },
+      //   },
+      // },
       {
         test: /\.svg$/,
         use: {
@@ -46,7 +46,7 @@ module.exports = {
             symbolId: 'icon-[name]',
           },
         },
-        include: [path.join(__dirname, '../src/icons')],
+        include: [path.join(__dirname, '../static/icons')],
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -87,6 +87,7 @@ module.exports = {
       actions: path.join(__dirname, '../src/redux/actions'),
       reducers: path.join(__dirname, '../src/redux/reducers'),
       style: path.join(__dirname, '../src/style'),
+      static: path.join(__dirname, '../static'),
     },
   },
   optimization: {
@@ -108,7 +109,7 @@ module.exports = {
       filename: 'index.html',
       template: path.join(__dirname, '../public/index.ejs'),
       title: 'Flow VIS',
-      favicon: path.join(__dirname, '../src/icons/favicon.ico'),
+      favicon: path.join(__dirname, '../static/icons/favicon.ico'),
       appMountId: 'app',
       minify: {
         html5: true,

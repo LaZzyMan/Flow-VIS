@@ -1,4 +1,5 @@
-{
+/* eslint-disable */
+const data = {
 "type": "FeatureCollection",
 "name": "road",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4130" } },
@@ -9126,4 +9127,8 @@
 { "type": "Feature", "properties": { "MapID": "426005", "Width": "30", "Direction": "1", "FuncClass": "5", "Length": "0.029", "Through": "0", "LaneNumS2E": "1", "LaneNumE2S": "1", "Elevated": "0" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ 120.6578968220023, 28.004396061299364 ], [ 120.658026625962634, 28.004445884726529 ], [ 120.658096519026543, 28.004505792955534 ], [ 120.658126472603044, 28.004545755053257 ] ] ] } },
 { "type": "Feature", "properties": { "MapID": "426005", "Width": "30", "Direction": "1", "FuncClass": "5", "Length": "0.036", "Through": "0", "LaneNumS2E": "1", "LaneNumE2S": "1", "Elevated": "0" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ 120.658046584834153, 28.004715883784382 ], [ 120.65783690184989, 28.004626168094688 ], [ 120.65774703778547, 28.004586289799136 ], [ 120.657727068462549, 28.00456631573379 ] ] ] } }
 ]
+}
+
+export default () => {
+  return data
 }

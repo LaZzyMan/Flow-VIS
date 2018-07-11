@@ -21,7 +21,7 @@
 // NOTE: this is same as 'project' shader module except this is applied to fragment shader.
 
 import { project } from 'deck.gl'
-import fsfp32 from '../fs-fp32/fs-fp32'
+import fsfp32 from '../fs-fp32'
 
 export default {
   name: 'fsproject',

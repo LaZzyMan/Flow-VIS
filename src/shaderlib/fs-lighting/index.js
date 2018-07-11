@@ -21,7 +21,7 @@
 // NOTE: this is same as 'lighting' shader module except this is applied to fragment shader.
 
 import { lighting } from 'deck.gl'
-import fsproject from '../fs-project/fs-project'
+import fsproject from '../fs-project'
 
 export default {
   name: 'fslighting',

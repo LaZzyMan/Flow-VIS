@@ -1,4 +1,5 @@
-{
+/* eslint-disable */
+const data = {
 "type": "FeatureCollection",
 "name": "site_point_selected",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
@@ -1066,3 +1067,5 @@
 { "type": "Feature", "properties": { "site_id": 28084, "enable": 1 }, "geometry": { "type": "Point", "coordinates": [ 120.6674, 27.9998 ] } }
 ]
 }
+
+export default () => { return data }

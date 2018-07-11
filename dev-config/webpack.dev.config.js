@@ -26,7 +26,7 @@ module.exports = merge(baseConfig, {
   plugins: [
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new OpenBrowserPlugin({ url: 'http://localhost:8080' }),
+    new OpenBrowserPlugin({ url: 'http://localhost:2018' }),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('development'),

@@ -1,4 +1,5 @@
-[{
+/* eslint-disable */
+const data = [{
     "loc": [120.643553, 28.011023],
     "major_vector": {
         "in": [
@@ -15979,3 +15980,5 @@
         ]
     }
 }]
+
+export default () => { return data }

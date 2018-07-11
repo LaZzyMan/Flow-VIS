@@ -1,8 +1,8 @@
 import request from '../utils/request'
 
-export default function getRoad(params) {
+export function getRoad(params) {
   return request({
-    url: '/static/road_selected.geojson',
+    url: '/api/road',
     method: 'get',
     params,
   })
@@ -10,7 +10,7 @@ export default function getRoad(params) {
 
 export function getStation(params) {
   return request({
-    url: '/static/site_point_selected.geojson',
+    url: '/api/station',
     method: 'get',
     params,
   })
@@ -18,7 +18,7 @@ export function getStation(params) {
 
 export function getPolygon(params) {
   return request({
-    url: '/static/site_polygon_selected.geojson',
+    url: '/api/voronoi',
     method: 'get',
     params,
   })

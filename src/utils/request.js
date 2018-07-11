@@ -24,8 +24,8 @@ service.interceptors.response.use(
   response => response,
   error => {
     notification.error({
-      message: 'Time Out',
-      description: error.message,
+      message: error.message,
+      // description: error.message,
     })
     return Promise.reject(error)
   },
