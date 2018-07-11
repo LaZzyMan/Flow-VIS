@@ -2,10 +2,17 @@ import React, { Component } from 'react'
 import ReactMapGL from 'react-map-gl'
 import autobind from 'react-autobind'
 import DeckGL, { GeoJsonLayer, MapController } from 'deck.gl'
+import { isWebGL2, registerShaderModules } from 'luma.gl'
 import TWEEN from 'tween.js'
 import PropTypes from 'prop-types'
 import { hex2Rgba } from '../../utils'
 import './MapView.scss'
+
+import fsfp32 from '../../shaderlib/fs-fp32'
+import fsproject from '../../shaderlib/fs-project'
+import fslighting from '../../shaderlib/fs-lighting'
+
+registerShaderModules([fsfp32, fsproject, fslighting])
 
 const roadData = require('../../data/road_selected.geojson')
 const station = require('../../data/site_point_selected.geojson')
@@ -40,6 +47,7 @@ class MapView extends Component {
         bearing: -0.6424747174301046,
         interactive: true,
       },
+      webGL2Supported: true,
     }
     autobind(this)
   }
@@ -58,12 +66,32 @@ class MapView extends Component {
     })
   }
 
-  updateViewport(viewport) {
+  onWebGLInitialized = (gl) => {
+    const webGL2Supported = isWebGL2(gl)
+    this.setState({ webGL2Supported })
+  }
+
+  updateViewport = (viewport) => {
     this.setState((prevState) => ({ viewport: { ...prevState.viewport, ...viewport } }))
   }
 
+
   render() {
-    const { viewport } = this.state
+    const { viewport, webGL2Supported } = this.state
+    if (!webGL2Supported) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+          }}
+        >
+          <h2> {"THIS DEMO REQUIRES WEBLG2, BUT YOUR BRWOSER DOESN'T SUPPORT IT"} </h2>
+        </div>
+      )
+    }
     const { settings } = this.props
     const layers = [
       settings[1].enable && new GeoJsonLayer({
@@ -105,9 +133,14 @@ class MapView extends Component {
         {...viewport}
         mapStyle="mapbox://styles/hideinme/cj9ydelgj7jlo2su9opjkbjsu"
         mapboxApiAccessToken={MAPBOX_TOKEN}
-        onViewportChange={this.updateViewport}
+        onViewportChange={v => this.updateViewport(v)}
       >
-        <DeckGL {...viewport} layers={layers} controller={MapController} />
+        <DeckGL
+          {...viewport}
+          layers={layers}
+          controller={MapController}
+          onWebGLInitialized={this.onWebGLInitialized}
+        />
       </ReactMapGL>
     )
   }

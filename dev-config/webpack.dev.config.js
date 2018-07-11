@@ -35,7 +35,7 @@ module.exports = merge(baseConfig, {
     new DashboardPlugin(dashboard.setData),
   ],
   devServer: {
-    port: 8080,
+    port: 2018,
     contentBase: path.join(__dirname, '../dist'),
     historyApiFallback: true,
     host: 'localhost',
