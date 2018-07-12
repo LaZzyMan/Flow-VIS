@@ -2,17 +2,17 @@ import React, { Component } from 'react'
 import ReactMapGL from 'react-map-gl'
 import autobind from 'react-autobind'
 import { message } from 'antd'
-import DeckGL, { GeoJsonLayer, MapController } from 'deck.gl'
+import DeckGL, { GeoJsonLayer } from 'deck.gl'
 import { isWebGL2, registerShaderModules } from 'luma.gl'
 import TWEEN from 'tween.js'
 import PropTypes from 'prop-types'
 import { hex2Rgba } from '../../utils'
-import './MapView.scss'
 import { getRoad, getStation, getPolygon } from '../../api'
-
 import fsfp32 from '../../shaderlib/fs-fp32'
 import fsproject from '../../shaderlib/fs-project'
 import fslighting from '../../shaderlib/fs-lighting'
+import ParticleLayer from './ParticleLayer'
+import './MapView.scss'
 
 registerShaderModules([fsfp32, fsproject, fslighting])
 
@@ -28,10 +28,6 @@ const roadColorMap = [
   hex2Rgba('#66CB34', 255),
 ]
 
-const animate = () => {
-  TWEEN.update()
-  window.requestAnimationFrame(animate)
-}
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiaGlkZWlubWUiLCJhIjoiY2o4MXB3eWpvNnEzZzJ3cnI4Z3hzZjFzdSJ9.FIWmaUbuuwT2Jl3OcBx1aQ' // eslint-disable-line
 
 class MapView extends Component {
@@ -53,15 +49,37 @@ class MapView extends Component {
       data: null,
     }
     autobind(this)
+    const particleState = { particleTime: 0 }
+    this.particleAnimation = new TWEEN.Tween(particleState)
+      .to({ particleTime: 60 }, 1000)
+      .onUpdate(() => this.setState(particleState))
+      .repeat(Infinity)
   }
 
   componentDidMount() {
+    const { settings } = this.props
     message.loading('Loading Data..', 0)
       .then(() => message.success('Loading finished', 2.5))
     window.addEventListener('resize', this.onResize.bind(this))
     this.onResize()
     this.loadData()
-    animate()
+    if (settings[4].enable) {
+      this.particleAnimation.start()
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { settings } = nextProps
+    const showParticles = settings[4].enable
+    if (showParticles) {
+      this.particleAnimation.start()
+    } else {
+      this.particleAnimation.stop()
+    }
+  }
+
+  componentWillUnmount() {
+    this.particleAnimation.stop()
   }
 
   onResize() {
@@ -78,6 +96,7 @@ class MapView extends Component {
   }
 
   loadData = () => {
+    const that = this
     Promise.all([getRoad({}), getStation({}), getPolygon({})])
       .then(([roads, stations, polygons]) => {
         message.destroy()
@@ -88,8 +107,10 @@ class MapView extends Component {
             station: stations,
           },
         })
+        that.onResize()
       }).catch(() => {
         message.destroy()
+        that.onResize()
       })
   }
 
@@ -120,19 +141,19 @@ class MapView extends Component {
     if (data) {
       const { roadData, station, voronoi } = data
       layers = [
-        settings[1].enable && voronoi !== null && new GeoJsonLayer({
+        settings[1].enable && new GeoJsonLayer({
           id: 'voronoi-layer',
           data: voronoi,
           pickable: true,
           stroked: true,
-          filled: true,
+          filled: false,
           lineJointRounded: true,
           fp64: true,
           getFillColor: hex2Rgba('#3b8d99', 100),
           getLineColor: hex2Rgba('#3b8d99', 255),
           getLineWidth: 1,
         }),
-        settings[2].enable && roadData !== null && new GeoJsonLayer({
+        settings[2].enable && new GeoJsonLayer({
           id: 'road-layer',
           data: roadData,
           pickable: true,
@@ -144,13 +165,17 @@ class MapView extends Component {
           lineWidthMinPixels: 0.5,
           lineWidthMaxPixels: 2,
         }),
-        settings[0].enable && station !== null && new GeoJsonLayer({
+        settings[0].enable && new GeoJsonLayer({
           id: 'station-layer',
           data: station,
           pickable: true,
           fp64: true,
           getFillColor: hex2Rgba('#aa4b6b', 200),
           getRadius: 5,
+        }),
+        settings[3].enable && new ParticleLayer({
+          id: 'particle-layer',
+          fp64: true,
         }),
       ]
     }
@@ -167,9 +192,7 @@ class MapView extends Component {
         <DeckGL
           {...viewport}
           layers={layers}
-          controller={MapController}
           onWebGLInitialized={this.onWebGLInitialized}
-          useDevicePixels
         />
       </ReactMapGL>
 
