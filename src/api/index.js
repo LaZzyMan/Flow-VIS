@@ -3,7 +3,7 @@ import request from '../utils/request'
 export function getRoad(params) {
   return new Promise((resolve, reject) => {
     request({
-      url: '/api/road',
+      url: '/road',
       method: 'get',
       params,
     })
@@ -19,7 +19,7 @@ export function getRoad(params) {
 export function getStation(params) {
   return new Promise((resolve, reject) => {
     request({
-      url: '/api/station',
+      url: '/station',
       method: 'get',
       params,
     })
@@ -35,7 +35,7 @@ export function getStation(params) {
 export function getPolygon(params) {
   return new Promise((resolve, reject) => {
     request({
-      url: '/api/voronoi',
+      url: '/voronoi',
       method: 'get',
       params,
     })

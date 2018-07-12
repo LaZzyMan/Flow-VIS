@@ -1,12 +1,12 @@
 const webpack = require('webpack')
 const path = require('path')
-const Dashboard = require('webpack-dashboard')
+// const Dashboard = require('webpack-dashboard')
 const DashboardPlugin = require('webpack-dashboard/plugin')
 const merge = require('webpack-merge')
 const OpenBrowserPlugin = require('open-browser-webpack-plugin')
 const baseConfig = require('./webpack.base.config')
 
-const dashboard = new Dashboard()
+// const dashboard = new Dashboard()
 
 module.exports = merge(baseConfig, {
   mode: 'development',
@@ -32,14 +32,14 @@ module.exports = merge(baseConfig, {
         NODE_ENV: JSON.stringify('development'),
       },
     }),
-    new DashboardPlugin(dashboard.setData),
+    // new DashboardPlugin(dashboard.setData),
   ],
   devServer: {
     port: 2018,
     contentBase: path.join(__dirname, '../dist'),
     historyApiFallback: true,
     host: 'localhost',
-    quiet: true,
+    quiet: false,
   },
   stats: {
     children: false,

@@ -4,7 +4,7 @@ import Router from 'router/router'
 import 'style/antd.scss'
 import React from 'react'
 import store from './redux/store'
-import './mock'
+// import './mock'
 
 renderWithHotReload(Router)
 

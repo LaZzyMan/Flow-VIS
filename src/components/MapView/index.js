@@ -115,45 +115,45 @@ class MapView extends Component {
         </div>
       )
     }
-    if (!data) {
-      return null
-    }
-    const { roadData, station, voronoi } = data
     const { settings } = this.props
-    const layers = [
-      settings[1].enable && voronoi !== null && new GeoJsonLayer({
-        id: 'voronoi-layer',
-        data: voronoi,
-        pickable: true,
-        stroked: true,
-        filled: true,
-        lineJointRounded: true,
-        fp64: true,
-        getFillColor: hex2Rgba('#3b8d99', 100),
-        getLineColor: hex2Rgba('#3b8d99', 255),
-        getLineWidth: 1,
-      }),
-      settings[2].enable && roadData !== null && new GeoJsonLayer({
-        id: 'road-layer',
-        data: roadData,
-        pickable: true,
-        stroked: true,
-        lineJointRounded: true,
-        fp64: true,
-        getLineColor: f => roadColorMap[Number(f.properties.FuncClass) - 1],
-        getLineWidth: f => Number(f.properties.Width),
-        lineWidthMinPixels: 0.5,
-        lineWidthMaxPixels: 2,
-      }),
-      settings[0].enable && station !== null && new GeoJsonLayer({
-        id: 'station-layer',
-        data: station,
-        pickable: true,
-        fp64: true,
-        getFillColor: hex2Rgba('#aa4b6b', 200),
-        getRadius: 5,
-      }),
-    ]
+    let layers = []
+    if (data) {
+      const { roadData, station, voronoi } = data
+      layers = [
+        settings[1].enable && voronoi !== null && new GeoJsonLayer({
+          id: 'voronoi-layer',
+          data: voronoi,
+          pickable: true,
+          stroked: true,
+          filled: true,
+          lineJointRounded: true,
+          fp64: true,
+          getFillColor: hex2Rgba('#3b8d99', 100),
+          getLineColor: hex2Rgba('#3b8d99', 255),
+          getLineWidth: 1,
+        }),
+        settings[2].enable && roadData !== null && new GeoJsonLayer({
+          id: 'road-layer',
+          data: roadData,
+          pickable: true,
+          stroked: true,
+          lineJointRounded: true,
+          fp64: true,
+          getLineColor: f => roadColorMap[Number(f.properties.FuncClass) - 1],
+          getLineWidth: f => Number(f.properties.Width),
+          lineWidthMinPixels: 0.5,
+          lineWidthMaxPixels: 2,
+        }),
+        settings[0].enable && station !== null && new GeoJsonLayer({
+          id: 'station-layer',
+          data: station,
+          pickable: true,
+          fp64: true,
+          getFillColor: hex2Rgba('#aa4b6b', 200),
+          getRadius: 5,
+        }),
+      ]
+    }
     return (
 
       <ReactMapGL
