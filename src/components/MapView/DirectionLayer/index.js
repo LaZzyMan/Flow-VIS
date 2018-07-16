@@ -90,8 +90,8 @@ class DirectionLayer extends Layer {
     this.state.numInstances = nx * ny
 
     const positions = this.calculatePositions({ nx, ny, bbox })
-    const vertices = new Float32Array([0.3, 0, 250, 0, 0.1, 0, 1, 0, 0, 0, -0.1, 0, 0, 0.1, 0])
-    const normals = new Float32Array([0, 0, 1, 0, 0.1, 0, 1, 0, 0, 0, -0.1, 0, 0, 0.1, 0])
+    const vertices = new Float32Array([0.003, 0, 2.50, 0, 0.001, 0, 0.01, 0, 0, 0, -0.001, 0, 0, 0.001, 0])
+    const normals = new Float32Array([0, 0, 0.01, 0, 0.001, 0, 0.01, 0, 0, 0, -0.001, 0, 0, 0.001, 0])
 
     const geometry = new Geometry({
       id: 'direction-layer',

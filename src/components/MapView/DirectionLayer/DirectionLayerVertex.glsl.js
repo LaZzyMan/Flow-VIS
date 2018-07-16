@@ -39,7 +39,7 @@ void main(void) {
   // get v in (0, 1)
   float vx = 0.05 + (texel.x - boundx.x) / (boundx.y - boundx.x) * 0.95;
   float vy = 0.05 + (texel.y - boundy.x) / (boundy.y - boundy.x) * 0.95;
-  float v = sqrt((vx * vx + vy * vy) / 2);
+  float v = sqrt((vx * vx + vy * vy) / 2.);
 
   // rotate normal lines and vertices
   float factor = v * 4.;
@@ -58,7 +58,7 @@ void main(void) {
 
   vPosition = position_worldspace;
   vNormal = vec4(normal, normals.z, 1);
-  
+
   // out of bounds
   if (texel.x == 0. && texel.y == 0. && texel.z == 0.) {
     vColor.a = 0.;
