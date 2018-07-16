@@ -43,6 +43,8 @@ module.exports = {
         'windows'
       ],
       'global-require': 0,
+      'no-buffer-constructor': 0,
+      'class-methods-use-this': 0,
     },
     settings: {
       'import/core-modules': [

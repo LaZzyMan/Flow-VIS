@@ -27,3 +27,24 @@ export function toggleResize() {
   e.initEvent('resize', true, true)
   window.dispatchEvent(e)
 }
+
+// calculate boundary
+export function getBounds(texData) {
+  const boundx = { max: texData[0], min: texData[0] }
+  const boundy = { max: texData[1], min: texData[1] }
+  for (let i = 0; i < texData.length / 4; i++) {
+    if (texData[4 * i] > boundx.max) {
+      boundx.max = texData[4 * i]
+    }
+    if (texData[4 * i] < boundx.min) {
+      boundx.min = texData[4 * i]
+    }
+    if (texData[4 * i + 1] > boundy.max) {
+      boundy.max = texData[4 * i + 1]
+    }
+    if (texData[4 * i + 1] < boundy.min) {
+      boundy.min = texData[4 * i + 1]
+    }
+  }
+  return { boundx, boundy }
+}

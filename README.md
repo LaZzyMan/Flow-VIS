@@ -7,8 +7,14 @@
 # 安装依赖
 yarn
 
-# 开发环境运行
+# 启动json server
+yarn server
+
+# 启动webpack devserver
 yarn start
+
+# 开发环境启动
+yarn dev
 
 # 生产环境运行
 yarn build
