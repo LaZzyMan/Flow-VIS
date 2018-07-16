@@ -1,3 +1,7 @@
+// uniform: bbox, boundx, boundy, flip, data, time
+// attribute: posFrom
+// gl_Positon
+
 export default `\
 #define SHADER_NAME particle-feedback-vertex-shader
 
@@ -9,18 +13,14 @@ export default `\
 #define DELTA 5.
 #define FACTOR .05
 
-uniform sampler2D dataFrom;
-uniform sampler2D dataTo;
-uniform float delta;
+uniform sampler2D data;
 uniform float time;
 
 uniform float flip;
 uniform vec4 bbox;
-uniform vec2 bounds0;
-uniform vec2 bounds1;
-uniform vec2 bounds2;
+uniform vec2 boundx;
+uniform vec2 boundy;
 
-//attribute vec3 positions;
 attribute vec4 posFrom;
 
 float rand(vec2 co){
@@ -32,55 +32,81 @@ void main(void) {
   float x = (posFrom.x - bbox.x) / (bbox.y - bbox.x);
   float y = (posFrom.y - bbox.z) / (bbox.w - bbox.z);
   vec2 coord = vec2(x, 1. - y);
-  vec4 texel1 = texture2D(dataFrom, coord);
-  vec4 texel2 = texture2D(dataTo, coord);
-  vec4 texel = mix(texel1, texel2, delta);
+  vec4 texel = texture2D(data, coord);
 
-  // angle
-  float angle = texel.x * PI4;
-  float anglePast = posFrom.z;
-  if (angle < 0.) {
-    angle += PI * 2.;
-  }
-  if (anglePast > -1.) {
-    if (angle > anglePast && abs(angle - anglePast) > abs(angle - (anglePast + PI * 2.))) {
-      anglePast += PI * 2.;
-    } else if (angle < anglePast && abs(anglePast - angle) > abs(anglePast - (angle + PI * 2.))) {
-      angle += PI * 2.;
+  // calculate speed in direction of x and y
+  float fx = 0.05 + 0.9 * (texel.x - boundx.x) / (boundx.y - boundx.x);
+  float fy = 0.05 + 0.9 * (texel.y - boundy.x) / (boundy.y - boundy.x);
+  if(boundx.x * boundx.y < 0.0){
+    if(texel.x >= 0.0){
+      fx = 0.05 + 0.9 * texel.x / boundx.y;
+    }else{
+      fx = - (0.05 + 0.9 * texel.x / boundx.x);
     }
-    angle = angle * FACTOR + anglePast * (1. - FACTOR);
   }
+  if(boundy.x * boundy.y < 0.0){
+    if(texel.y >= 0.0){
+      fy = 0.05 + 0.9 * texel.y / boundy.y;
+    }else{
+      fy = - (0.05 + 0.9 * texel.y / boundy.x);
+    }
+  }
+  float pastx = posFrom.z;
+  float pasty = posFrom.w;
+  
+  float currentx = pastx + fx * 0.1;
+  float currenty = pasty + fy * 0.1;
+
+  // calculate next postion
+  float deltax = pastx * 0.01 + 0.5 * fx * 0.001;
+  float deltay = pasty * 0.01 + 0.5 * fy * 0.001;
+  vec2 offset = vec2(deltax, deltay) * 0.0001;
+  vec2 offsetPos = posFrom.xy + offset;
+  vec4 endPos = vec4(offsetPos, currentx, currenty);
+
+  // calculate angle
+  // float angle = texel.x * PI4;
+  // float anglePast = posFrom.z;
+  // if (angle < 0.) {
+  //   angle += PI * 2.;
+  // }
+  // if (anglePast > -1.) {
+  //   if (angle > anglePast && abs(angle - anglePast) > abs(angle - (anglePast + PI * 2.))) {
+  //     anglePast += PI * 2.;
+  //   } else if (angle < anglePast && abs(anglePast - angle) > abs(anglePast - (angle + PI * 2.))) {
+  //     angle += PI * 2.;
+  //   }
+  //   angle = angle * FACTOR + anglePast * (1. - FACTOR);
+  // }
 
   // wind speed
-  float wind = 0.05 + 0.9 * (texel.y - bounds1.x) / (bounds1.y - bounds1.x);
-  float windPast = posFrom.w;
-  if (windPast > -1.) {
-    wind = wind * FACTOR + windPast * (1. - FACTOR);
-  }
+  // float wind = 0.05 + 0.9 * (texel.y - bounds1.x) / (bounds1.y - bounds1.x);
+  // float windPast = posFrom.w;
+  // if (windPast > -1.) {
+  //   wind = wind * FACTOR + windPast * (1. - FACTOR);
+  // }
 
-  vec2 offset = vec2(cos(angle), sin(angle)) * wind * 0.2;
-  vec2 offsetPos = posFrom.xy + offset;
-
-  vec4 endPos = vec4(offsetPos, mod(angle, PI * 2.), wind);
-
-  // if out of bounds then map to random position
+  // if 1. out of bounds 2. movement is too little 3. No f
+  // then map to random position
   float r1 = rand(vec2(posFrom.x, offset.x + time));
   float r2 = rand(vec2(posFrom.y, offset.y + time));
   r1 = r1 * (bbox.y - bbox.x) + bbox.x;
   r2 = r2 * (bbox.w - bbox.z) + bbox.z;
   vec2 randValues = vec2(r1, r2);
-
-  // endPos = vec4(offsetPos, randValues);
-  endPos.xy = mix(offsetPos, randValues,
-    float(offsetPos.x < bbox.x || offsetPos.x > bbox.y ||
-      offsetPos.y < bbox.z || offsetPos.y > bbox.w));
-  endPos.xy = mix(endPos.xy, randValues, float(length(offset) < EPSILON));
-  endPos.xy = mix(endPos.xy, randValues, float(texel.x == 0. && texel.y == 0. && texel.z == 0.));
-  if (flip > 0.) {
-    if (abs(abs(fract(endPos.x)) - flip / 10.) < EPSILON) {
-      endPos.xy = randValues;
-    }
+  if(offsetPos.x < bbox.x || offsetPos.x > bbox.y || offsetPos.y < bbox.z || offsetPos.y > bbox.w) {
+    endPos.xy = randValues;
+    endPos.zw = vec2(0.);
   }
+  // endPos.xy = mix(offsetPos, randValues,
+  //   float(offsetPos.x < bbox.x || offsetPos.x > bbox.y ||
+  //     offsetPos.y < bbox.z || offsetPos.y > bbox.w));
+  // endPos.xy = mix(endPos.xy, randValues, float(length(offset) < EPSILON));
+  // endPos.xy = mix(endPos.xy, randValues, float(texel.x == 0. && texel.y == 0.));
+  // if (flip > 0.) {
+  //   if (abs(abs(fract(endPos.x)) - flip / 10.) < EPSILON) {
+  //     endPos.xy = randValues;
+  //   }
+  // }
   // endPos.xy = mix(endPos.xy, randValues, abs(flip - positions.z) <= DELTA ? 1. : 0.);
 
   gl_Position = endPos;
