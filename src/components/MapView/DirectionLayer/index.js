@@ -90,9 +90,10 @@ class DirectionLayer extends Layer {
     this.state.numInstances = nx * ny
 
     const positions = this.calculatePositions({ nx, ny, bbox })
+    /* eslint-disable */
     const vertices = new Float32Array([0.003, 0, 2.50, 0, 0.001, 0, 0.01, 0, 0, 0, -0.001, 0, 0, 0.001, 0])
     const normals = new Float32Array([0, 0, 0.01, 0, 0.001, 0, 0.01, 0, 0, 0, -0.001, 0, 0, 0.001, 0])
-
+    /* eslint-enable */
     const geometry = new Geometry({
       id: 'direction-layer',
       drawMode: GL.TRIANGLE_FAN,

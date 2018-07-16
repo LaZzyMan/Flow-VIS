@@ -39,10 +39,10 @@ void main(void) {
   // get v in (0, 1)
   float vx = 0.05 + (texel.x - boundx.x) / (boundx.y - boundx.x) * 0.95;
   float vy = 0.05 + (texel.y - boundy.x) / (boundy.y - boundy.x) * 0.95;
-  float v = sqrt((vx * vx + vy * vy) / 2.);
+  float v = sqrt((abs(vx) + abs(vy)) / 2.);
 
   // rotate normal lines and vertices
-  float factor = v * 4.;
+  float factor = v * .2;
   vec2 vertex = rotation * vertices.xy;
   vec2 normal = rotation * normals.xy;
   vec2 pos = project_position(positions.xy + vertex.xy * factor);
@@ -53,8 +53,8 @@ void main(void) {
   gl_Position = project_to_clipspace(position_worldspace);
 
   // calculate color for icon
-  float temp = floor(v * 3.) / 3.;
-  vColor = vec4((1. - vec3(3. * temp, 0.25, 0.4)), 1);
+  // float temp = floor(v * 3.) / 3.;
+  vColor = vec4((1. - vec3(v, 0.25, 0.4)), 1);
 
   vPosition = position_worldspace;
   vNormal = vec4(normal, normals.z, 1);
