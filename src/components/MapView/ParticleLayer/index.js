@@ -1,12 +1,14 @@
 import { Layer } from 'deck.gl'
 import GL from 'luma.gl/dist/es6/constants'
 import {
-  Model, Geometry, Buffer, setParameters, Texture2D, Transform,
+  Model, Geometry, Buffer, setParameters, Texture2D, experimental,
 } from 'luma.gl'
 import PropTypes from 'prop-types'
 import vertexShader from './ParticleLayerVertex.glsl'
 import fragmentShader from './ParticleLayerFragment.glsl'
 import vertexShaderTF from './TransformFeedbackVertex.glsl'
+
+const { Transform } = experimental
 
 class ParticleLayer extends Layer {
   initializeState() {
@@ -15,9 +17,9 @@ class ParticleLayer extends Layer {
     const { width, height } = textureSize
     const texture = this.createTexture(gl, {})
 
-    const model = this.getModel(gl, 1200, 600)
+    const model = this.getModel(gl, 600, 300)
 
-    this.setupTransformFeedback(gl, bbox, 1200, 600)
+    this.setupTransformFeedback(gl, bbox, 600, 300)
 
     this.setState({
       model,
@@ -28,8 +30,9 @@ class ParticleLayer extends Layer {
     })
   }
 
-  shouldUpdateState = ({ changeFlags }) => changeFlags.somethingChanged
-
+  // shouldUpdateState(changeFlags) {
+  //   changeFlags.somethingChanged
+  // }
   // updateState(props) {
   //   const { time } = props
   //   const timeInterval = Math.floor(time)
@@ -93,7 +96,7 @@ class ParticleLayer extends Layer {
     })
   }
 
-  setupTransformFeedback = (gl, bbox, nx, ny) => {
+  setupTransformFeedback(gl, bbox, nx, ny) {
     const positions4 = this.calculatePositions4({ bbox, nx, ny })
 
     const bufferFrom = new Buffer(gl, {
@@ -125,7 +128,7 @@ class ParticleLayer extends Layer {
     })
   }
 
-  runTransformFeedback = ({ gl }) => {
+  runTransformFeedback({ gl }) {
     const {
       texture, transform,
     } = this.state
@@ -180,7 +183,7 @@ class ParticleLayer extends Layer {
     })
   }
 
-  getModel = (gl, nx, ny) => {
+  getModel(gl, nx, ny) {
     // This will be a grid of elements
     this.setState({ numInstances: nx * ny })
     const positions3 = new Float32Array([0, 0, 0])
@@ -208,12 +211,14 @@ class ParticleLayer extends Layer {
     return this.state.numInstances
   }
 
-  getShaders = () => ({
-    vs: vertexShader,
-    fs: fragmentShader,
-  })
+  getShaders() {
+    return {
+      vs: vertexShader,
+      fs: fragmentShader,
+    }
+  }
 
-  createTexture= (gl, opt) => {
+  createTexture(gl, opt) {
     const textureOptions = Object.assign(
       {
         format: gl.RGBA32F,
@@ -233,22 +238,22 @@ class ParticleLayer extends Layer {
     return new Texture2D(gl, textureOptions)
   }
 
-  // calculatePositions3=({ nx, ny }) => {
-  //   const positions3 = new Float32Array(nx * ny * 3)
+  calculatePositions3({ nx, ny }) {
+    const positions3 = new Float32Array(nx * ny * 3)
 
-  //   for (let i = 0; i < nx; ++i) {
-  //     for (let j = 0; j < ny; ++j) {
-  //       const index3 = (i + j * nx) * 3
-  //       positions3[index3 + 0] = 0
-  //       positions3[index3 + 1] = 0
-  //       positions3[index3 + 2] = Math.random() * nx
-  //     }
-  //   }
+    for (let i = 0; i < nx; ++i) {
+      for (let j = 0; j < ny; ++j) {
+        const index3 = (i + j * nx) * 3
+        positions3[index3 + 0] = 0
+        positions3[index3 + 1] = 0
+        positions3[index3 + 2] = Math.random() * nx
+      }
+    }
 
-  //   return positions3
-  // }
+    return positions3
+  }
 
-  calculatePositions4 = ({ bbox, nx, ny }) => {
+  calculatePositions4({ bbox, nx, ny }) {
     const diffX = bbox.maxLng - bbox.minLng
     const diffY = bbox.maxLat - bbox.minLat
     const spanX = diffX / (nx - 1)
@@ -261,8 +266,8 @@ class ParticleLayer extends Layer {
         const index4 = (i + j * nx) * 4
         positions4[index4 + 0] = i * spanX + bbox.minLng
         positions4[index4 + 1] = j * spanY + bbox.minLat
-        positions4[index4 + 2] = -1
-        positions4[index4 + 3] = -1
+        positions4[index4 + 2] = 0
+        positions4[index4 + 3] = 0
       }
     }
 
@@ -273,7 +278,7 @@ class ParticleLayer extends Layer {
 ParticleLayer.propTypes = {
   bbox: PropTypes.object.isRequired,
   textureSize: PropTypes.object.isRequired,
-  texData: PropTypes.Float32Array.isRequired,
+  texData: PropTypes.array.isRequired,
   bounds: PropTypes.object.isRequired,
 }
 ParticleLayer.layerName = 'ParticleLayer'

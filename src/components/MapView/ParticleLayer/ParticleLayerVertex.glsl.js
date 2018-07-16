@@ -55,14 +55,14 @@ void main(void) {
   // float alpha = mix(0., 0.8, pow(v, .5));
 
   // NEW
-  float alpha = mix(0., .8, pow(v, .8));
+  float alpha = mix(0., .8, pow(v, .6));
 
   if (texel.x == 0. && texel.y == 0. && texel.z == 0.) {
     alpha = 0.;
   }
   // temperature in 0-1
-  float temp = (texel.z - bounds2.x) / (bounds2.y - bounds2.x);
-  // vColor = vec4(vec3(0.8), pow(alpha, power));
+  // float temp = (texel.z - boundy.x) / (bounds2.y - bounds2.x);
   vColor = vec4(vec3(0.8), alpha);
+  // vColor = vec4(vec3(29./255., 176./255., 184./255.), alpha);
 }
 `

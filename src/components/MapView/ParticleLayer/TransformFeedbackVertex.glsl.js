@@ -35,15 +35,32 @@ void main(void) {
   vec4 texel = texture2D(data, coord);
 
   // calculate speed in direction of x and y
-  float currentx = posFrom.z;
-  float currenty = posFrom.w;
   float fx = 0.05 + 0.9 * (texel.x - boundx.x) / (boundx.y - boundx.x);
   float fy = 0.05 + 0.9 * (texel.y - boundy.x) / (boundy.y - boundy.x);
-  currentx = currentx + fx;
-  currenty = currenty + fy;
+  if(boundx.x * boundx.y < 0.0){
+    if(texel.x >= 0.0){
+      fx = 0.05 + 0.9 * texel.x / boundx.y;
+    }else{
+      fx = - (0.05 + 0.9 * texel.x / boundx.x);
+    }
+  }
+  if(boundy.x * boundy.y < 0.0){
+    if(texel.y >= 0.0){
+      fy = 0.05 + 0.9 * texel.y / boundy.y;
+    }else{
+      fy = - (0.05 + 0.9 * texel.y / boundy.x);
+    }
+  }
+  float pastx = posFrom.z;
+  float pasty = posFrom.w;
+  
+  float currentx = pastx + fx * 0.1;
+  float currenty = pasty + fy * 0.1;
 
   // calculate next postion
-  vec2 offset = vec2(currentx, currenty) * 0.2;
+  float deltax = pastx * 0.01 + 0.5 * fx * 0.001;
+  float deltay = pasty * 0.01 + 0.5 * fy * 0.001;
+  vec2 offset = vec2(deltax, deltay) * 0.0001;
   vec2 offsetPos = posFrom.xy + offset;
   vec4 endPos = vec4(offsetPos, currentx, currenty);
 
@@ -76,19 +93,20 @@ void main(void) {
   r1 = r1 * (bbox.y - bbox.x) + bbox.x;
   r2 = r2 * (bbox.w - bbox.z) + bbox.z;
   vec2 randValues = vec2(r1, r2);
-  // if(offsetPos.x < bbox.x || offsetPos.x > bbox.y || offsetPos.y < bbox.z || offsetPos.y > bbox.w) {
-  //   endPos.xy = randValues;
-  // }
-  endPos.xy = mix(offsetPos, randValues,
-    float(offsetPos.x < bbox.x || offsetPos.x > bbox.y ||
-      offsetPos.y < bbox.z || offsetPos.y > bbox.w));
-  endPos.xy = mix(endPos.xy, randValues, float(length(offset) < EPSILON));
-  endPos.xy = mix(endPos.xy, randValues, float(texel.x == 0. && texel.y == 0.));
-  if (flip > 0.) {
-    if (abs(abs(fract(endPos.x)) - flip / 10.) < EPSILON) {
-      endPos.xy = randValues;
-    }
+  if(offsetPos.x < bbox.x || offsetPos.x > bbox.y || offsetPos.y < bbox.z || offsetPos.y > bbox.w) {
+    endPos.xy = randValues;
+    endPos.zw = vec2(0.);
   }
+  // endPos.xy = mix(offsetPos, randValues,
+  //   float(offsetPos.x < bbox.x || offsetPos.x > bbox.y ||
+  //     offsetPos.y < bbox.z || offsetPos.y > bbox.w));
+  // endPos.xy = mix(endPos.xy, randValues, float(length(offset) < EPSILON));
+  // endPos.xy = mix(endPos.xy, randValues, float(texel.x == 0. && texel.y == 0.));
+  // if (flip > 0.) {
+  //   if (abs(abs(fract(endPos.x)) - flip / 10.) < EPSILON) {
+  //     endPos.xy = randValues;
+  //   }
+  // }
   // endPos.xy = mix(endPos.xy, randValues, abs(flip - positions.z) <= DELTA ? 1. : 0.);
 
   gl_Position = endPos;

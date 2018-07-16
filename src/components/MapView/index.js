@@ -65,15 +65,14 @@ class MapView extends Component {
     window.addEventListener('resize', this.onResize.bind(this))
     this.onResize()
     this.loadData()
-    if (settings[4].enable) {
+    if (settings[3].enable) {
       this.particleAnimation.start()
     }
   }
 
   componentWillReceiveProps(nextProps) {
     const { settings } = nextProps
-    const showParticles = settings[4].enable
-    if (showParticles) {
+    if (settings[3].enable) {
       this.particleAnimation.start()
     } else {
       this.particleAnimation.stop()
@@ -198,7 +197,7 @@ class MapView extends Component {
       <ReactMapGL
         className="map-view"
         {...viewport}
-        mapStyle="mapbox://styles/hideinme/cj9ydelgj7jlo2su9opjkbjsu"
+        mapStyle="mapbox://styles/hideinme/cjjo0icb95w172slnj93q6y31"
         mapboxApiAccessToken={MAPBOX_TOKEN}
         dragRotate
         onViewportChange={v => this.updateViewport(v)}
