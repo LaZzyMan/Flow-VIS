@@ -69,7 +69,7 @@ void main(void) {
   //   wind = wind * FACTOR + windPast * (1. - FACTOR);
   // }
 
-  // if 1. out of bounds 2. movement is too little 
+  // if 1. out of bounds 2. movement is too little 3. No f
   // then map to random position
   float r1 = rand(vec2(posFrom.x, offset.x + time));
   float r2 = rand(vec2(posFrom.y, offset.y + time));
@@ -83,7 +83,7 @@ void main(void) {
     float(offsetPos.x < bbox.x || offsetPos.x > bbox.y ||
       offsetPos.y < bbox.z || offsetPos.y > bbox.w));
   endPos.xy = mix(endPos.xy, randValues, float(length(offset) < EPSILON));
-  // endPos.xy = mix(endPos.xy, randValues, float(texel.x == 0. && texel.y == 0.));
+  endPos.xy = mix(endPos.xy, randValues, float(texel.x == 0. && texel.y == 0.));
   if (flip > 0.) {
     if (abs(abs(fract(endPos.x)) - flip / 10.) < EPSILON) {
       endPos.xy = randValues;

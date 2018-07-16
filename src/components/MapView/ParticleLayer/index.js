@@ -1,7 +1,7 @@
 import { Layer } from 'deck.gl'
 import GL from 'luma.gl/dist/es6/constants'
 import {
-  Model, Geometry, Buffer, setParameters, loadTextures, Texture2D, Transform,
+  Model, Geometry, Buffer, setParameters, Texture2D, Transform,
 } from 'luma.gl'
 import PropTypes from 'prop-types'
 import vertexShader from './ParticleLayerVertex.glsl'
@@ -11,26 +11,9 @@ import vertexShaderTF from './TransformFeedbackVertex.glsl'
 class ParticleLayer extends Layer {
   initializeState() {
     const { gl } = this.context
-    const { bbox, texData } = this.props
-
-    loadTextures(gl, {
-      urls: [],
-      parameters: {
-        parameters: {
-          [GL.TEXTURE_MAG_FILTER]: GL.LINEAR,
-          [GL.TEXTURE_MIN_FILTER]: GL.LINEAR,
-          [GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
-          [GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE,
-        },
-      },
-    }).then(textures => {
-      this.setState({ elevationTexture: textures[0] })
-    })
-
-    const { textureSize } = texData
+    const { bbox, texData, textureSize } = this.props
     const { width, height } = textureSize
-    const textureFrom = this.createTexture(gl, {})
-    const textureTo = this.createTexture(gl, {})
+    const texture = this.createTexture(gl, {})
 
     const model = this.getModel(gl, 1200, 600)
 
@@ -39,8 +22,7 @@ class ParticleLayer extends Layer {
     this.setState({
       model,
       texData,
-      textureFrom,
-      textureTo,
+      texture,
       width,
       height,
     })
@@ -48,49 +30,32 @@ class ParticleLayer extends Layer {
 
   shouldUpdateState = ({ changeFlags }) => changeFlags.somethingChanged
 
-  updateState(props) {
-    const { time } = props
-    const timeInterval = Math.floor(time)
-    const delta = time - timeInterval
-    this.setState({
-      timeInterval,
-      delta,
-    })
-  }
+  // updateState(props) {
+  //   const { time } = props
+  //   const timeInterval = Math.floor(time)
+  //   const delta = time - timeInterval
+  //   this.setState({
+  //     timeInterval,
+  //     delta,
+  //   })
+  // }
 
   draw({ uniforms }) {
-    if (!this.state.elevationTexture) {
-      return
-    }
     const { gl } = this.context
-    const { bbox, texData, zScale } = this.props
-    const { dataBounds } = texData
+    const { bbox, texData, bounds } = this.props
 
     this.runTransformFeedback({ gl })
 
+    const { model, texture } = this.state
     const {
-      model, textureFrom, textureTo, delta,
-    } = this.state
-    const { textureArray } = texData
-    const {
-      width, height, elevationTexture, bufferTo, bufferFrom, timeInterval,
+      width, height, bufferTo, bufferFrom,
     } = this.state
 
     const currentUniforms = {
       bbox: [bbox.minLng, bbox.maxLng, bbox.minLat, bbox.maxLat],
-      bounds0: [dataBounds[0].min, dataBounds[0].max],
-      bounds1: [dataBounds[1].min, dataBounds[1].max],
-      bounds2: [dataBounds[2].min, dataBounds[2].max],
-      color0: [83, 185, 148].map(d => d / 255),
-      color1: [255, 255, 174].map(d => d / 255),
-      color2: [241, 85, 46].map(d => d / 255),
-      dataFrom: textureFrom,
-      dataTo: textureTo,
-      elevationTexture,
-      elevationBounds: null,
-      elevationRange: null,
-      zScale,
-      delta,
+      boundx: [bounds.boundx.min, bounds.boundx.max],
+      boundy: [bounds.boundy.min, bounds.boundy.max],
+      data: texture,
       pixelRatio: window.devicePixelRatio || 1,
     }
 
@@ -104,18 +69,8 @@ class ParticleLayer extends Layer {
       [GL.UNPACK_FLIP_Y_WEBGL]: true,
     }
 
-    textureFrom.setImageData({
-      pixels: textureArray[timeInterval],
-      width,
-      height,
-      format: gl.RGBA32F,
-      type: gl.FLOAT,
-      dataFormat: gl.RGBA,
-      parameters: pixelStoreParameters,
-    })
-
-    textureTo.setImageData({
-      pixels: textureArray[timeInterval + 1],
+    texture.setImageData({
+      pixels: texData,
       width,
       height,
       format: gl.RGBA32F,
@@ -172,10 +127,11 @@ class ParticleLayer extends Layer {
 
   runTransformFeedback = ({ gl }) => {
     const {
-      textureFrom, textureTo, delta, timeInterval, transform,
+      texture, transform,
     } = this.state
-    const { bbox } = this.props
-    const { dataBounds, textureArray, textureSize } = this.props.texData
+    const {
+      bbox, bounds, textureSize, texData,
+    } = this.props
     const { width, height } = textureSize
     const { bufferFrom, bufferTo, now } = this.state
     let { counter } = this.state
@@ -188,18 +144,8 @@ class ParticleLayer extends Layer {
     const pixelStoreParameters = {
       [GL.UNPACK_FLIP_Y_WEBGL]: true,
     }
-    textureFrom.setImageData({
-      pixels: textureArray[timeInterval],
-      width,
-      height,
-      format: gl.RGBA32F,
-      type: gl.FLOAT,
-      dataFormat: gl.RGBA,
-      parameters: pixelStoreParameters,
-    })
-
-    textureTo.setImageData({
-      pixels: textureArray[timeInterval + 1],
+    texture.setImageData({
+      pixels: texData,
       width,
       height,
       format: gl.RGBA32F,
@@ -210,14 +156,11 @@ class ParticleLayer extends Layer {
 
     const uniforms = {
       bbox: [bbox.minLng, bbox.maxLng, bbox.minLat, bbox.maxLat],
-      bounds0: [dataBounds[0].min, dataBounds[0].max],
-      bounds1: [dataBounds[1].min, dataBounds[1].max],
-      bounds2: [dataBounds[2].min, dataBounds[2].max],
-      dataFrom: textureFrom,
-      dataTo: textureTo,
+      boundx: [bounds.boundx.min, bounds.boundx.max],
+      boundy: [bounds.boundy.min, bounds.boundy.max],
+      data: texture,
       time,
       flip,
-      delta,
     }
 
     bufferFrom.updateLayout({ instanced: 0 })
@@ -264,6 +207,11 @@ class ParticleLayer extends Layer {
   getNumInstances() {
     return this.state.numInstances
   }
+
+  getShaders = () => ({
+    vs: vertexShader,
+    fs: fragmentShader,
+  })
 
   createTexture= (gl, opt) => {
     const textureOptions = Object.assign(
@@ -323,9 +271,17 @@ class ParticleLayer extends Layer {
 }
 
 ParticleLayer.propTypes = {
-  time: PropTypes.number.isRequired,
+  bbox: PropTypes.object.isRequired,
+  textureSize: PropTypes.object.isRequired,
+  texData: PropTypes.Float32Array.isRequired,
+  bounds: PropTypes.object.isRequired,
 }
 ParticleLayer.layerName = 'ParticleLayer'
-ParticleLayer.defaultProps = {}
+ParticleLayer.defaultProps = {
+  bbox: null,
+  textureSize: null,
+  texData: null,
+  bounds: null,
+}
 
 export default ParticleLayer

@@ -6,8 +6,10 @@ import DeckGL, { GeoJsonLayer } from 'deck.gl'
 import { isWebGL2, registerShaderModules } from 'luma.gl'
 import TWEEN from 'tween.js'
 import PropTypes from 'prop-types'
-import { hex2Rgba } from '../../utils'
-import { getRoad, getStation, getPolygon } from '../../api'
+import { hex2Rgba, getBounds } from '../../utils'
+import {
+  getRoad, getStation, getPolygon, getTexture,
+} from '../../api'
 import fsfp32 from '../../shaderlib/fs-fp32'
 import fsproject from '../../shaderlib/fs-project'
 import fslighting from '../../shaderlib/fs-lighting'
@@ -97,14 +99,15 @@ class MapView extends Component {
 
   loadData = () => {
     const that = this
-    Promise.all([getRoad({}), getStation({}), getPolygon({})])
-      .then(([roads, stations, polygons]) => {
+    Promise.all([getRoad({}), getStation({}), getPolygon({}), getTexture({})])
+      .then(([roads, stations, polygons, textures]) => {
         message.destroy()
         this.setState({
           data: {
             roadData: roads,
             voronoi: polygons,
             station: stations,
+            texData: textures,
           },
         })
         that.onResize()
@@ -139,7 +142,9 @@ class MapView extends Component {
     const { settings } = this.props
     let layers = []
     if (data) {
-      const { roadData, station, voronoi } = data
+      const {
+        roadData, station, voronoi, texData,
+      } = data
       layers = [
         settings[1].enable && new GeoJsonLayer({
           id: 'voronoi-layer',
@@ -176,6 +181,15 @@ class MapView extends Component {
         settings[3].enable && new ParticleLayer({
           id: 'particle-layer',
           fp64: true,
+          bbox: {
+            minLng: 120.636690154504251,
+            maxLng: 120.723288207926046,
+            minLat: 27.982619974031067,
+            maxLat: 28.027239987997554,
+          },
+          textureSize: { height: 88, width: 173 },
+          texData,
+          bounds: getBounds(texData),
         }),
       ]
     }
