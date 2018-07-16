@@ -1,62 +1,61 @@
+// uniform: bbox, boundx, boundy, data, pixelRatio
+// attribute: position, posFrom
+// varying: vColor
+// gl_Positon gl_PointSize
+
 export default `\
 #define SHADER_NAME particle-layer-vertex-shader
 
 #define HEIGHT_FACTOR 25.
 #define ELEVATION_SCALE 100.
 
-uniform sampler2D dataFrom;
-uniform sampler2D dataTo;
-uniform sampler2D elevationTexture;
-uniform float delta;
+uniform sampler2D data;
 uniform float pixelRatio;
 
 uniform vec4 bbox;
-uniform vec2 size;
-uniform vec2 bounds0;
-uniform vec2 bounds1;
-uniform vec2 bounds2;
-uniform vec4 elevationBounds;
-uniform vec2 elevationRange;
-uniform float zScale;
+uniform vec2 boundx;
+uniform vec2 boundy;
 
 attribute vec3 positions;
 attribute vec4 posFrom;
 // attribute vec3 vertices;
 
 varying vec4 vColor;
-varying float vAltitude;
+// varying float vAltitude;
 
-float getAltitude(vec2 lngLat) {
-  vec2 texCoords = (lngLat - elevationBounds.xy) / (elevationBounds.zw - elevationBounds.xy);
-  vec4 elevation = texture2D(elevationTexture, texCoords);
+// float getAltitude(vec2 lngLat) {
+//   vec2 texCoords = (lngLat - elevationBounds.xy) / (elevationBounds.zw - elevationBounds.xy);
+//   vec4 elevation = texture2D(elevationTexture, texCoords);
 
-  return mix(elevationRange.x, elevationRange.y, elevation.r);
-}
+//   return mix(elevationRange.x, elevationRange.y, elevation.r);
+// }
 
 void main(void) {
   // position in texture coords
   float x = (posFrom.x - bbox.x) / (bbox.y - bbox.x);
   float y = (posFrom.y - bbox.z) / (bbox.w - bbox.z);
   vec2 coord = vec2(x, 1. - y);
-  vec4 texel = mix(texture2D(dataFrom, coord), texture2D(dataTo, coord), delta);
+  vec4 texel = texture2D(data, coord);
 
-  vAltitude = getAltitude(posFrom.xy);
-  //float wind = (texel.y - bounds1.x) / (bounds1.y - bounds1.x);
-  float wind = 0.05 + (texel.y - bounds1.x) / (bounds1.y - bounds1.x) * 0.9;
+  // vAltitude = getAltitude(posFrom.xy);
+  // float wind = (texel.y - bounds1.x) / (bounds1.y - bounds1.x);
+  float vx = 0.05 + (texel.x - boundx.x) / (boundx.y - boundx.x) * 0.9;
+  float vy = 0.05 + (texel.y - boundy.x) / (boundy.y - boundx.x) * 0.9;
+  float v = length(vec2(vx, vy));
 
   vec2 pos = project_position(posFrom.xy);
-  float elevation = project_scale((texel.w) * ELEVATION_SCALE);
+  // float elevation = project_scale((texel.w) * ELEVATION_SCALE);
 
-  vec3 extrudedPosition = vec3(pos.xy, elevation + 1.0) + positions;
+  vec3 extrudedPosition = vec3(pos.xy, 1.0) + positions;
   vec4 position_worldspace = vec4(extrudedPosition, 1.0);
   gl_Position = project_to_clipspace(position_worldspace);
   gl_PointSize = 3.5 * pixelRatio / 2.0;
 
   // OLD
-  // float alpha = mix(0., 0.8, pow(wind, .5));
+  // float alpha = mix(0., 0.8, pow(v, .5));
 
   // NEW
-  float alpha = mix(0., .8, pow(wind, .8));
+  float alpha = mix(0., .8, pow(v, .8));
 
   if (texel.x == 0. && texel.y == 0. && texel.z == 0.) {
     alpha = 0.;
