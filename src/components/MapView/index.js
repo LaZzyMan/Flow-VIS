@@ -14,6 +14,7 @@ import fsfp32 from '../../shaderlib/fs-fp32'
 import fsproject from '../../shaderlib/fs-project'
 import fslighting from '../../shaderlib/fs-lighting'
 import ParticleLayer from './ParticleLayer'
+import DirectionLayer from './DirectionLayer'
 import './MapView.scss'
 
 registerShaderModules([fsfp32, fsproject, fslighting])
@@ -189,6 +190,27 @@ class MapView extends Component {
           textureSize: { height: 88, width: 173 },
           texData,
           bounds: getBounds(texData),
+        }),
+        settings[4].enable && new DirectionLayer({
+          id: 'direction-layer',
+          fp64: true,
+          bbox: {
+            minLng: 120.636690154504251,
+            maxLng: 120.723288207926046,
+            minLat: 27.982619974031067,
+            maxLat: 28.027239987997554,
+          },
+          textureSize: { height: 88, width: 173 },
+          texData,
+          bounds: getBounds(texData),
+          lightSettings: {
+            lightsPosition: [-60, 25, 15000, -140, 0, 400000],
+            ambientRatio: 0.8,
+            diffuseRatio: 0.6,
+            specularRatio: 0.2,
+            lightsStrength: [1.0, 0.0, 2.0, 0.0],
+            numberOfLights: 2,
+          },
         }),
       ]
     }

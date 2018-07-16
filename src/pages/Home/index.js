@@ -14,6 +14,7 @@ export default class Home extends Component {
         { name: 'Voronoi Layer', enable: true },
         { name: 'Road Layer', enable: false },
         { name: 'Particle Layer', enable: true },
+        { name: 'Direction Layer', enable: true },
       ],
     }
     autobind(this)
