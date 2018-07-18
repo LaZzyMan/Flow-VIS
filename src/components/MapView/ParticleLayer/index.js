@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import vertexShader from './ParticleLayerVertex.glsl'
 import fragmentShader from './ParticleLayerFragment.glsl'
 import vertexShaderTF from './TransformFeedbackVertex.glsl'
+import { getBounds, hex2Rgb } from '../../../utils'
 
 const { Transform } = experimental
 
@@ -15,6 +16,8 @@ class ParticleLayer extends Layer {
     const { gl } = this.context
     const { bbox, texData, textureSize } = this.props
     const { width, height } = textureSize
+    const textureEW = this.createTexture(gl, {})
+    const textureNS = this.createTexture(gl, {})
     const texture = this.createTexture(gl, {})
 
     const model = this.getModel(gl, 600, 300)
@@ -24,6 +27,8 @@ class ParticleLayer extends Layer {
     this.setState({
       model,
       texData,
+      textureEW,
+      textureNS,
       texture,
       width,
       height,
@@ -45,7 +50,7 @@ class ParticleLayer extends Layer {
 
   draw({ uniforms }) {
     const { gl } = this.context
-    const { bbox, texData, bounds } = this.props
+    const { bbox, texData } = this.props
 
     this.runTransformFeedback({ gl })
 
@@ -53,13 +58,26 @@ class ParticleLayer extends Layer {
     const {
       width, height, bufferTo, bufferFrom,
     } = this.state
-
+    const avgValue = new Float32Array(texData[0].length)
+    avgValue.map((value, index) => {
+      if (index % 4 === 0) {
+        return [texData[0][index], texData[0][index + 1],
+          texData[0][index + 2], texData[0][index + 3],
+          texData[1][index], texData[1][index + 1],
+          texData[1][index + 2], texData[1][index + 3]]
+          .reduce((avg, num) => avg + Math.abs(num) / 8)
+      }
+      return 0
+    })
+    const boundavg = getBounds(avgValue)
     const currentUniforms = {
       bbox: [bbox.minLng, bbox.maxLng, bbox.minLat, bbox.maxLat],
-      boundx: [bounds.boundx.min, bounds.boundx.max],
-      boundy: [bounds.boundy.min, bounds.boundy.max],
+      bound: [boundavg.boundx.min, boundavg.boundx.max],
       data: texture,
       pixelRatio: window.devicePixelRatio || 1,
+      color1: hex2Rgb('#12c2e9'),
+      color2: hex2Rgb('#c471ed'),
+      color3: hex2Rgb('#f64f59'),
     }
 
     setParameters(gl, {
@@ -73,7 +91,7 @@ class ParticleLayer extends Layer {
     }
 
     texture.setImageData({
-      pixels: texData,
+      pixels: avgValue,
       width,
       height,
       format: gl.RGBA32F,
@@ -130,7 +148,7 @@ class ParticleLayer extends Layer {
 
   runTransformFeedback({ gl }) {
     const {
-      texture, transform,
+      textureEW, textureNS, transform,
     } = this.state
     const {
       bbox, bounds, textureSize, texData,
@@ -147,8 +165,18 @@ class ParticleLayer extends Layer {
     const pixelStoreParameters = {
       [GL.UNPACK_FLIP_Y_WEBGL]: true,
     }
-    texture.setImageData({
-      pixels: texData,
+    textureEW.setImageData({
+      pixels: texData[0],
+      width,
+      height,
+      format: gl.RGBA32F,
+      type: gl.FLOAT,
+      dataFormat: gl.RGBA,
+      parameters: pixelStoreParameters,
+    })
+
+    textureNS.setImageData({
+      pixels: texData[1],
       width,
       height,
       format: gl.RGBA32F,
@@ -159,9 +187,16 @@ class ParticleLayer extends Layer {
 
     const uniforms = {
       bbox: [bbox.minLng, bbox.maxLng, bbox.minLat, bbox.maxLat],
-      boundx: [bounds.boundx.min, bounds.boundx.max],
-      boundy: [bounds.boundy.min, bounds.boundy.max],
-      data: texture,
+      boundex: [bounds[0].boundx.min, bounds[0].boundx.max],
+      boundey: [bounds[0].boundy.min, bounds[0].boundy.max],
+      boundwx: [bounds[0].boundz.min, bounds[0].boundz.max],
+      boundwy: [bounds[0].boundw.min, bounds[0].boundw.max],
+      boundnx: [bounds[1].boundx.min, bounds[1].boundx.max],
+      boundny: [bounds[1].boundy.min, bounds[1].boundy.max],
+      boundsx: [bounds[1].boundz.min, bounds[1].boundz.max],
+      boundsy: [bounds[1].boundw.min, bounds[1].boundw.max],
+      dataEW: textureEW,
+      dataNS: textureNS,
       time,
       flip,
     }
@@ -278,8 +313,8 @@ class ParticleLayer extends Layer {
 ParticleLayer.propTypes = {
   bbox: PropTypes.object.isRequired,
   textureSize: PropTypes.object.isRequired,
-  texData: PropTypes.array.isRequired,
-  bounds: PropTypes.object.isRequired,
+  texData: PropTypes.arrayOf(PropTypes.array).isRequired,
+  bounds: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 ParticleLayer.layerName = 'ParticleLayer'
 ParticleLayer.defaultProps = {

@@ -51,12 +51,12 @@ export function getPolygon(params) {
 export function getTexture(params) {
   return new Promise((resolve, reject) => {
     request({
-      url: '/east_in',
+      url: '/texture',
       method: 'get',
       params,
     })
       .then((response) => {
-        resolve(new Float32Array(response.data))
+        resolve([new Float32Array(response.data[0]), new Float32Array(response.data[1])])
       })
       .catch(() => {
         reject()

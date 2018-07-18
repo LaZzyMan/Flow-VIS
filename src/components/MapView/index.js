@@ -189,7 +189,7 @@ class MapView extends Component {
           },
           textureSize: { height: 88, width: 173 },
           texData,
-          bounds: getBounds(texData),
+          bounds: texData.map(texture => (getBounds(texture))),
         }),
         settings[4].enable && new DirectionLayer({
           id: 'direction-layer',
