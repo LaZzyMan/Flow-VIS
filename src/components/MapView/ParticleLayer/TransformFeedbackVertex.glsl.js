@@ -1,4 +1,5 @@
-// uniform: bbox, boundx, boundy, flip, data, time
+// uniform: bbox, , flip, dataEW, dataNS, time
+// boundex, boundey, boundwx, boundwy, boundnx, boundny, boundsx, boundsy
 // attribute: posFrom
 // gl_Positon
 
@@ -9,17 +10,24 @@ export default `\
 #define PI2 1.5707963267949
 #define PI4 0.78539816339745
 #define HEIGHT_FACTOR 25.
-#define EPSILON 0.01
+#define EPSILON 0.00001
 #define DELTA 5.
 #define FACTOR .05
 
-uniform sampler2D data;
+uniform sampler2D dataEW;
+uniform sampler2D dataNS;
 uniform float time;
 
 uniform float flip;
 uniform vec4 bbox;
-uniform vec2 boundx;
-uniform vec2 boundy;
+uniform vec2 boundex;
+uniform vec2 boundey;
+uniform vec2 boundwx;
+uniform vec2 boundwy;
+uniform vec2 boundnx;
+uniform vec2 boundny;
+uniform vec2 boundsx;
+uniform vec2 boundsy;
 
 attribute vec4 posFrom;
 
@@ -32,59 +40,64 @@ void main(void) {
   float x = (posFrom.x - bbox.x) / (bbox.y - bbox.x);
   float y = (posFrom.y - bbox.z) / (bbox.w - bbox.z);
   vec2 coord = vec2(x, 1. - y);
-  vec4 texel = texture2D(data, coord);
+  vec4 texelEW = texture2D(dataEW, coord);
+  vec4 texelNS = texture2D(dataNS, coord);
 
   // calculate speed in direction of x and y
-  float fx = 0.05 + 0.9 * (texel.x - boundx.x) / (boundx.y - boundx.x);
-  float fy = 0.05 + 0.9 * (texel.y - boundy.x) / (boundy.y - boundy.x);
-  if(boundx.x * boundx.y < 0.0){
-    if(texel.x >= 0.0){
-      fx = 0.05 + 0.9 * texel.x / boundx.y;
-    }else{
-      fx = - (0.05 + 0.9 * texel.x / boundx.x);
-    }
+  float fex = 0.05 + 0.95 * (texelEW.x - boundex.x) / (boundex.y - boundex.x);
+  float fey = 0.;
+  float fwx = 0.05 + 0.95 * (texelEW.z - boundwx.x) / (boundwx.y - boundwx.x);
+  float fwy = 0.;
+  float fnx = 0.;
+  float fny = 0.05 + 0.95 * (texelNS.y - boundny.x) / (boundny.y - boundny.x);
+  float fsx = 0.;
+  float fsy = 0.05 + 0.95 * (texelNS.w - boundsy.x) / (boundsy.y - boundsy.x);
+  if(texelEW.y >= 0.0){
+    fey = 0.05 + 0.95 * texelEW.y / boundey.y;
+  }else{
+    fey = - (0.05 + 0.95 * texelEW.y / boundey.x);
   }
-  if(boundy.x * boundy.y < 0.0){
-    if(texel.y >= 0.0){
-      fy = 0.05 + 0.9 * texel.y / boundy.y;
-    }else{
-      fy = - (0.05 + 0.9 * texel.y / boundy.x);
-    }
+  if(texelEW.w >= 0.0){
+    fwy = 0.05 + 0.95 * texelEW.w / boundwy.y;
+  }else{
+    fwy = - (0.05 + 0.95 * texelEW.w / boundwy.x);
   }
-  float pastx = posFrom.z;
-  float pasty = posFrom.w;
+  if(texelNS.x >= 0.0){
+    fnx = 0.05 + 0.95 * texelNS.x / boundnx.y;
+  }else{
+    fnx = - (0.05 + 0.95 * texelNS.x / boundnx.x);
+  }
+  if(texelNS.z >= 0.0){
+    fsx = 0.05 + 0.95 * texelNS.z / boundsx.y;
+  }else{
+    fsx = - (0.05 + 0.95 * texelNS.z / boundsx.x);
+  }
   
-  float currentx = pastx + fx * 0.1;
-  float currenty = pasty + fy * 0.1;
+  float fe = length(vec2(fex, fey));
+  float fw = length(vec2(fwx, fwy));
+  float fn = length(vec2(fnx, fny));
+  float fs = length(vec2(fsx, fsy));
+  float randv = rand(vec2(posFrom.x, time));
+  float prob = vec4(fe, fw + fe, fn + fw + fe, fs + fn + fw + fe) / (le + fw + fn + fs);
+  float f = vec2(fex, fey);
+  if(randv <= prob.x){
+    f = vec2(fex, fey);
+  }else if(randv <= prob.y){
+    f = vec2(fwx, fwy);
+  }else if(randv <= prob.z){
+    f = vec2(fnx, fny);
+  }else{
+    f = vec2(fsx, fsy);
+  }
 
-  // calculate next postion
-  float deltax = pastx * 0.01 + 0.5 * fx * 0.001;
-  float deltay = pasty * 0.01 + 0.5 * fy * 0.001;
-  vec2 offset = vec2(deltax, deltay) * 0.0001;
+  // calculate end velority and position t=0.1s
+  f = normalize(f);
+  float pastv = vec2(posFrom.z, posFrom.w);
+  float currentv = pastv + f * 0.1;
+
+  vec2 offset = vec2 offset = (pastv * 0.1 + f * 0.05) * 0.0001;
   vec2 offsetPos = posFrom.xy + offset;
-  vec4 endPos = vec4(offsetPos, currentx, currenty);
-
-  // calculate angle
-  // float angle = texel.x * PI4;
-  // float anglePast = posFrom.z;
-  // if (angle < 0.) {
-  //   angle += PI * 2.;
-  // }
-  // if (anglePast > -1.) {
-  //   if (angle > anglePast && abs(angle - anglePast) > abs(angle - (anglePast + PI * 2.))) {
-  //     anglePast += PI * 2.;
-  //   } else if (angle < anglePast && abs(anglePast - angle) > abs(anglePast - (angle + PI * 2.))) {
-  //     angle += PI * 2.;
-  //   }
-  //   angle = angle * FACTOR + anglePast * (1. - FACTOR);
-  // }
-
-  // wind speed
-  // float wind = 0.05 + 0.9 * (texel.y - bounds1.x) / (bounds1.y - bounds1.x);
-  // float windPast = posFrom.w;
-  // if (windPast > -1.) {
-  //   wind = wind * FACTOR + windPast * (1. - FACTOR);
-  // }
+  vec4 endPos = vec4(offsetPos, currentv.x, currentv.y);
 
   // if 1. out of bounds 2. movement is too little 3. No f
   // then map to random position
@@ -97,9 +110,10 @@ void main(void) {
     endPos.xy = randValues;
     endPos.zw = vec2(0.);
   }
-  // endPos.xy = mix(offsetPos, randValues,
-  //   float(offsetPos.x < bbox.x || offsetPos.x > bbox.y ||
-  //     offsetPos.y < bbox.z || offsetPos.y > bbox.w));
+  if(length(offset) < EPSILON){
+    endPos.xy = randValues;
+    endPos.zw = vec2(0.);
+  } 
   // endPos.xy = mix(endPos.xy, randValues, float(length(offset) < EPSILON));
   // endPos.xy = mix(endPos.xy, randValues, float(texel.x == 0. && texel.y == 0.));
   // if (flip > 0.) {
