@@ -1,7 +1,7 @@
 import { Layer } from 'deck.gl'
 import GL from 'luma.gl/constants'
 import {
-  Model, Geometry, Buffer, setParameters, Texture2D, _Transform as Transform,
+  Model, Geometry, Buffer, setParameters, Texture2D, _Transform as Transform, createGLContext,
 } from 'luma.gl'
 import PropTypes from 'prop-types'
 import vertexShader from './ParticleLayerVertex.glsl'
@@ -11,7 +11,9 @@ import { getBounds, hex2Rgb } from '../../../utils'
 
 class ParticleLayer extends Layer {
   initializeState() {
-    const { gl } = this.context
+    // const { gl } = this.context
+    const gl = createGLContext({ canvas: 'deckgl-overlay', preserveDrawingBuffer: true })
+    gl.preserveDrawingBuffer = true
     const { bbox, texData, textureSize } = this.props
     const { width, height } = textureSize
     const textureEW = this.createTexture(gl, {})
