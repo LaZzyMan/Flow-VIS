@@ -1,15 +1,13 @@
 import { Layer } from 'deck.gl'
-import GL from 'luma.gl/dist/es6/constants'
+import GL from 'luma.gl/constants'
 import {
-  Model, Geometry, Buffer, setParameters, Texture2D, experimental,
+  Model, Geometry, Buffer, setParameters, Texture2D, _Transform as Transform,
 } from 'luma.gl'
 import PropTypes from 'prop-types'
 import vertexShader from './ParticleLayerVertex.glsl'
 import fragmentShader from './ParticleLayerFragment.glsl'
 import vertexShaderTF from './TransformFeedbackVertex.glsl'
 import { getBounds, hex2Rgb } from '../../../utils'
-
-const { Transform } = experimental
 
 class ParticleLayer extends Layer {
   initializeState() {
@@ -19,10 +17,24 @@ class ParticleLayer extends Layer {
     const textureEW = this.createTexture(gl, {})
     const textureNS = this.createTexture(gl, {})
     const texture = this.createTexture(gl, {})
+    const avgValue = new Float32Array(texData[0].length).map((value, index) => {
+      if (index % 4 !== 0) {
+        return 0
+      }
+      const avg = Math.sqrt(texData[0][index] * texData[0][index]
+        + texData[0][index + 1] * texData[0][index + 1])
+      + Math.sqrt(texData[0][index + 2] * texData[0][index + 2]
+        + texData[0][index + 3] * texData[0][index + 3])
+      + Math.sqrt(texData[1][index] * texData[1][index]
+        + texData[1][index + 1] * texData[1][index + 1])
+      + Math.sqrt(texData[1][index + 2] * texData[1][index + 2]
+        + texData[1][index + 3] * texData[1][index + 3])
+      return avg
+    })
 
-    const model = this.getModel(gl, 600, 300)
+    const model = this.getModel(gl, 200, 100)
 
-    this.setupTransformFeedback(gl, bbox, 600, 300)
+    this.setupTransformFeedback(gl, bbox, 200, 100)
 
     this.setState({
       model,
@@ -32,6 +44,7 @@ class ParticleLayer extends Layer {
       texture,
       width,
       height,
+      avgValue,
     })
   }
 
@@ -50,34 +63,24 @@ class ParticleLayer extends Layer {
 
   draw({ uniforms }) {
     const { gl } = this.context
-    const { bbox, texData } = this.props
+    const { bbox } = this.props
 
     this.runTransformFeedback({ gl })
 
-    const { model, texture } = this.state
+    const { model, texture, avgValue } = this.state
     const {
       width, height, bufferTo, bufferFrom,
     } = this.state
-    const avgValue = new Float32Array(texData[0].length)
-    avgValue.map((value, index) => {
-      if (index % 4 === 0) {
-        return [texData[0][index], texData[0][index + 1],
-          texData[0][index + 2], texData[0][index + 3],
-          texData[1][index], texData[1][index + 1],
-          texData[1][index + 2], texData[1][index + 3]]
-          .reduce((avg, num) => avg + Math.abs(num) / 8)
-      }
-      return 0
-    })
+
     const boundavg = getBounds(avgValue)
     const currentUniforms = {
       bbox: [bbox.minLng, bbox.maxLng, bbox.minLat, bbox.maxLat],
       bound: [boundavg.boundx.min, boundavg.boundx.max],
       data: texture,
       pixelRatio: window.devicePixelRatio || 1,
-      color1: hex2Rgb('#12c2e9'),
-      color2: hex2Rgb('#c471ed'),
-      color3: hex2Rgb('#f64f59'),
+      color1: hex2Rgb('#12c2e9').map(v => v / 255),
+      color2: hex2Rgb('#c471ed').map(v => v / 255),
+      color3: hex2Rgb('#f64f59').map(v => v / 255),
     }
 
     setParameters(gl, {
@@ -100,7 +103,7 @@ class ParticleLayer extends Layer {
       parameters: pixelStoreParameters,
     })
 
-    bufferTo.updateLayout({ instanced: 1 })
+    bufferTo.updateAccessor({ instanced: 1 })
     model.setAttributes({
       posFrom: bufferTo,
     })
@@ -134,8 +137,8 @@ class ParticleLayer extends Layer {
       varyings: ['gl_Position'],
       elementCount: positions4.length / 4,
       sourceBuffers: { posFrom: bufferFrom },
-      destinationBuffers: { gl_Position: bufferTo },
-      sourceDestinationMap: { posFrom: 'gl_Position' },
+      feedbackBuffers: { gl_Position: bufferTo },
+      feedbackMap: { posFrom: 'gl_Position' },
     })
     this.setState({
       counter: 0,
@@ -201,8 +204,8 @@ class ParticleLayer extends Layer {
       flip,
     }
 
-    bufferFrom.updateLayout({ instanced: 0 })
-    bufferTo.updateLayout({ instanced: 0 })
+    bufferFrom.updateAccessor({ instanced: 0 })
+    bufferTo.updateAccessor({ instanced: 0 })
 
     transform.run({ uniforms })
     transform.swapBuffers()

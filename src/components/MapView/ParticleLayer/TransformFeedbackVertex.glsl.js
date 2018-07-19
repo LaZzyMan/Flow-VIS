@@ -10,7 +10,7 @@ export default `\
 #define PI2 1.5707963267949
 #define PI4 0.78539816339745
 #define HEIGHT_FACTOR 25.
-#define EPSILON 0.00001
+#define EPSILON 0.0000005
 #define DELTA 5.
 #define FACTOR .05
 
@@ -46,12 +46,12 @@ void main(void) {
   // calculate speed in direction of x and y
   float fex = 0.05 + 0.95 * (texelEW.x - boundex.x) / (boundex.y - boundex.x);
   float fey = 0.;
-  float fwx = 0.05 + 0.95 * (texelEW.z - boundwx.x) / (boundwx.y - boundwx.x);
+  float fwx = 0.05 + 0.95 * (texelEW.z - boundwx.y) / (boundwx.y - boundwx.x);
   float fwy = 0.;
   float fnx = 0.;
   float fny = 0.05 + 0.95 * (texelNS.y - boundny.x) / (boundny.y - boundny.x);
   float fsx = 0.;
-  float fsy = 0.05 + 0.95 * (texelNS.w - boundsy.x) / (boundsy.y - boundsy.x);
+  float fsy = 0.05 + 0.95 * (texelNS.w - boundsy.y) / (boundsy.y - boundsy.x);
   if(texelEW.y >= 0.0){
     fey = 0.05 + 0.95 * texelEW.y / boundey.y;
   }else{
@@ -73,29 +73,32 @@ void main(void) {
     fsx = - (0.05 + 0.95 * texelNS.z / boundsx.x);
   }
   
-  float fe = length(vec2(fex, fey));
-  float fw = length(vec2(fwx, fwy));
-  float fn = length(vec2(fnx, fny));
-  float fs = length(vec2(fsx, fsy));
+  float fe = length(vec2(texelEW.x, texelEW.y));
+  float fw = length(vec2(texelEW.z, texelEW.w));
+  float fn = length(vec2(texelNS.x, texelNS.y));
+  float fs = length(vec2(texelNS.z, texelNS.w));
   float randv = rand(vec2(posFrom.x, time));
-  float prob = vec4(fe, fw + fe, fn + fw + fe, fs + fn + fw + fe) / (le + fw + fn + fs);
-  float f = vec2(fex, fey);
+  randv = clamp(randv, .1, .9);
+  // randv = 1.;
+  vec4 prob = vec4(fw, fw + fe, fs + fw + fe, fs + fn + fw + fe) / (fe + fw + fn + fs);
+  // prob = vec4(0.25, 0.5, 0.75, 1.);
+  vec2 f = vec2(fex, fey);
   if(randv <= prob.x){
-    f = vec2(fex, fey);
+    f = vec2(fex, fey) * .9;
   }else if(randv <= prob.y){
-    f = vec2(fwx, fwy);
+    f = vec2(fwx, fwy) * .9;
   }else if(randv <= prob.z){
-    f = vec2(fnx, fny);
-  }else{
     f = vec2(fsx, fsy);
+  }else{
+    f = vec2(fnx, fny);
   }
 
-  // calculate end velority and position t=0.1s
+  // calculate end velority and position t=0.1s m=0.001
   f = normalize(f);
-  float pastv = vec2(posFrom.z, posFrom.w);
-  float currentv = pastv + f * 0.1;
+  vec2 pastv = vec2(posFrom.z, posFrom.w);
+  vec2 currentv = pastv + f * 0.1 * 10.;
 
-  vec2 offset = vec2 offset = (pastv * 0.1 + f * 0.05) * 0.0001;
+  vec2 offset = (pastv * 0.1 + f * 0.005 * 100.) * 0.000005;
   vec2 offsetPos = posFrom.xy + offset;
   vec4 endPos = vec4(offsetPos, currentv.x, currentv.y);
 

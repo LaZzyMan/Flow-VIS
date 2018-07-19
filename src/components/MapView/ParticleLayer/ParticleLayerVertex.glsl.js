@@ -38,15 +38,17 @@ void main(void) {
   // calculate color of particle
   vec4 texel = texture2D(data, coord);
   float v = 0.05 + (texel.x - bound.x) / (bound.y - bound.x) * 0.95;
-  v = sqrt(v);
+  // v = sqrt(v);
   float alpha = mix(0., 1., pow(v, .8));
-  if (texel.x == 0) {
+  if (texel.x == 0.) {
     alpha = 0.;
   }
   if(v <= .5){
     vColor = vec4(mix(color1, color2, v * 2.), 1.);
+    // vColor = vec4(0.);
   }else{
     vColor = vec4(mix(color2, color3, (v-.5) * 2.), 1.);
+    // vColor = vec4(1.);
   }
   // vColor = vec4(vec3(0.8), alpha);
   // vColor = vec4(vec3(29./255., 176./255., 184./255.), alpha);
