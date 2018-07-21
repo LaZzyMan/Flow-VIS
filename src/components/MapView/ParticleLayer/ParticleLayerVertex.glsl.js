@@ -44,10 +44,10 @@ void main(void) {
     alpha = 0.;
   }
   if(v <= .5){
-    vColor = vec4(mix(color1, color2, v * 2.), 1.);
+    vColor = vec4(mix(color1, color2, v * 2.), .8);
     // vColor = vec4(0.);
   }else{
-    vColor = vec4(mix(color2, color3, (v-.5) * 2.), 1.);
+    vColor = vec4(mix(color2, color3, (v-.5) * 2.), .8);
     // vColor = vec4(1.);
   }
   // vColor = vec4(vec3(0.8), alpha);

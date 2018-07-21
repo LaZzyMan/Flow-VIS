@@ -1,7 +1,7 @@
 import { Layer } from 'deck.gl'
 import GL from 'luma.gl/constants'
 import {
-  Model, Geometry, Buffer, setParameters, Texture2D, _Transform as Transform, createGLContext,
+  Model, Geometry, Buffer, setParameters, Texture2D, _Transform as Transform,
 } from 'luma.gl'
 import PropTypes from 'prop-types'
 import vertexShader from './ParticleLayerVertex.glsl'
@@ -11,9 +11,9 @@ import { getBounds, hex2Rgb } from '../../../utils'
 
 class ParticleLayer extends Layer {
   initializeState() {
-    // const { gl } = this.context
-    const gl = createGLContext({ canvas: 'deckgl-overlay', preserveDrawingBuffer: true })
-    gl.preserveDrawingBuffer = true
+    const { gl } = this.context
+    // const gl = createGLContext({ canvas: 'deckgl-overlay', preserveDrawingBuffer: true })
+    // gl.preserveDrawingBuffer = true
     const { bbox, texData, textureSize } = this.props
     const { width, height } = textureSize
     const textureEW = this.createTexture(gl, {})
@@ -34,9 +34,9 @@ class ParticleLayer extends Layer {
       return avg
     })
 
-    const model = this.getModel(gl, 200, 100)
+    const model = this.getModel(gl, 800, 400)
 
-    this.setupTransformFeedback(gl, bbox, 200, 100)
+    this.setupTransformFeedback(gl, bbox, 800, 400)
 
     this.setState({
       model,
@@ -306,8 +306,8 @@ class ParticleLayer extends Layer {
         const index4 = (i + j * nx) * 4
         positions4[index4 + 0] = i * spanX + bbox.minLng
         positions4[index4 + 1] = j * spanY + bbox.minLat
-        positions4[index4 + 2] = 0
-        positions4[index4 + 3] = 0
+        positions4[index4 + 2] = Math.random()
+        positions4[index4 + 3] = Math.random()
       }
     }
 

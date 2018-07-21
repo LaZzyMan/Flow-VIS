@@ -10,7 +10,7 @@ export default `\
 #define PI2 1.5707963267949
 #define PI4 0.78539816339745
 #define HEIGHT_FACTOR 25.
-#define EPSILON 0.0000005
+#define EPSILON 0.000001
 #define DELTA 5.
 #define FACTOR .05
 
@@ -94,11 +94,15 @@ void main(void) {
   }
 
   // calculate end velority and position t=0.1s m=0.001
+  // add a resistance depend on the past v
   f = normalize(f);
   vec2 pastv = vec2(posFrom.z, posFrom.w);
+  vec2 resistance = normalize(pastv) * pastv * pastv * .5 * 1.293 * .001 * -1.0;
+  f = f + resistance;
+
   vec2 currentv = pastv + f * 0.1 * 10.;
 
-  vec2 offset = (pastv * 0.1 + f * 0.005 * 100.) * 0.000005;
+  vec2 offset = (pastv * 0.1 + f * 0.005 * 100.) * 0.00001;
   vec2 offsetPos = posFrom.xy + offset;
   vec4 endPos = vec4(offsetPos, currentv.x, currentv.y);
 
@@ -111,11 +115,11 @@ void main(void) {
   vec2 randValues = vec2(r1, r2);
   if(offsetPos.x < bbox.x || offsetPos.x > bbox.y || offsetPos.y < bbox.z || offsetPos.y > bbox.w) {
     endPos.xy = randValues;
-    endPos.zw = vec2(0.);
+    endPos.zw = vec2(0.5);
   }
   if(length(offset) < EPSILON){
     endPos.xy = randValues;
-    endPos.zw = vec2(0.);
+    endPos.zw = vec2(0.5);
   } 
   // endPos.xy = mix(endPos.xy, randValues, float(length(offset) < EPSILON));
   // endPos.xy = mix(endPos.xy, randValues, float(texel.x == 0. && texel.y == 0.));
