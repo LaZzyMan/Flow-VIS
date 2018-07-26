@@ -3,7 +3,7 @@
 // varying: vPosition, vNormal, vColor
 // gl_Position
 export default `\
-#define SHADER_NAME wind-layer-vertex-shader
+#define SHADER_NAME direction-layer-vertex-shader
 
 #define PI 3.1415926535
 #define PI2 1.5707963267949
@@ -16,6 +16,7 @@ uniform vec4 bbox;
 uniform vec2 size;
 uniform vec2 boundx;
 uniform vec2 boundy;
+uniform vec3 color;
 
 attribute vec3 positions;
 attribute vec3 vertices;
@@ -54,7 +55,8 @@ void main(void) {
 
   // calculate color for icon
   // float temp = floor(v * 3.) / 3.;
-  vColor = vec4((1. - vec3(v, 0.25, 0.4)), 1);
+  // vColor = vec4((1. - vec3(v, 0.25, 0.4)), 1);
+  vColor = vec4(color, 1.);
 
   vPosition = position_worldspace;
   vNormal = vec4(normal, normals.z, 1);

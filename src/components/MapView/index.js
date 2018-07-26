@@ -202,7 +202,6 @@ class MapView extends Component {
           },
           textureSize: { height: 88, width: 173 },
           texData,
-          bounds: texData.map(texture => (getBounds(texture))),
           lightSettings: {
             lightsPosition: [-60, 25, 15000, -140, 0, 400000],
             ambientRatio: 0.8,
