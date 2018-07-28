@@ -224,7 +224,7 @@ class MapView extends Component {
         preventStyleDiffing
         onViewportChange={v => this.updateViewport(v)}
       >
-        <div style={{ position: 'absolute', right: 0 }}>
+        <div style={{ position: 'absolute', right: 0, margin: '24px' }}>
           <NavigationControl onViewportChange={v => this.updateViewport(v)} />
         </div>
         <DeckGL

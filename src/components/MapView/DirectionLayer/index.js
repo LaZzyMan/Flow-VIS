@@ -38,7 +38,7 @@ class DirectionLayer extends CompositeLayer {
       bbox,
       textureSize,
       bounds: getBounds(tex),
-      tex,
+      texData: tex,
       color: colorMap[index],
       lightSettings,
     }))

@@ -10,7 +10,8 @@ void main(void) {
   if (vColor.a == 0.) {
     discard;
   }
-  float lightWeight = getLightWeight(vPosition.xyz, vNormal.xzy);
-  gl_FragColor = vec4(vColor.xyz * lightWeight, 1);
+  float lightWeight = getLightWeight(vPosition.xyz, vNormal.xyz);
+  // gl_FragColor = vec4(vColor.xyz * lightWeight, 1);
+  gl_FragColor = vColor;
 }
 `

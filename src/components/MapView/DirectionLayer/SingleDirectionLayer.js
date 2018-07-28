@@ -9,7 +9,7 @@ import fragmentShader from './SingleDirectionLayerFragment.glsl'
 import fslighting from '../../../shaderlib/fs-lighting'
 
 const LIGHT_UNIFORMS = {
-  lightsPosition: [-70.585, 38.0, 15000],
+  lightsPosition: [120.636690154504251, 28.027239987997554, 1000],
   lightsStrength: [1.0, 0.0],
   ambientRatio: 0.9,
   diffuseRatio: 0.8,
@@ -23,7 +23,7 @@ class SingleDirectionLayer extends Layer {
     const { textureSize, bbox } = this.props
 
     const model = this.getModel({
-      gl, bbox, nx: 40, ny: 20,
+      gl, bbox, nx: 30, ny: 15,
     })
 
     const { width, height } = textureSize
@@ -94,9 +94,10 @@ class SingleDirectionLayer extends Layer {
     this.state.numInstances = nx * ny
 
     const positions = this.calculatePositions({ nx, ny, bbox })
+    // console.log(positions)
     /* eslint-disable */
-    const vertices = new Float32Array([0.003, 0, 2.50, 0, 0.001, 0, 0.01, 0, 0, 0, -0.001, 0, 0, 0.001, 0])
-    const normals = new Float32Array([0, 0, 0.01, 0, 0.001, 0, 0.01, 0, 0, 0, -0.001, 0, 0, 0.001, 0])
+    const vertices = new Float32Array([0.003, 0, 0.001, 0.001, 0, 0, 0.002, 0.001, 0, 0.01, 0, 0, 0.002, -0.001, 0, 0.001, 0, 0])
+    const normals = new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     /* eslint-enable */
     const geometry = new Geometry({
       id: 'direction-icon',

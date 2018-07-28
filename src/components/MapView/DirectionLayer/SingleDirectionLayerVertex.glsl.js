@@ -40,10 +40,11 @@ void main(void) {
   // get v in (0, 1)
   float vx = 0.05 + (texel.x - boundx.x) / (boundx.y - boundx.x) * 0.95;
   float vy = 0.05 + (texel.y - boundy.x) / (boundy.y - boundy.x) * 0.95;
+  // reduce difference between min and max
   float v = sqrt((abs(vx) + abs(vy)) / 2.);
 
   // rotate normal lines and vertices
-  float factor = v * .2;
+  float factor = v * .15;
   vec2 vertex = rotation * vertices.xy;
   vec2 normal = rotation * normals.xy;
   vec2 pos = project_position(positions.xy + vertex.xy * factor);
