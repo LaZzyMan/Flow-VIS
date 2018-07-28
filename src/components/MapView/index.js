@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import ReactMapGL from 'react-map-gl'
+import ReactMapGL, { NavigationControl } from 'react-map-gl'
 import autobind from 'react-autobind'
 import { message } from 'antd'
 import DeckGL, { GeoJsonLayer } from 'deck.gl'
@@ -189,7 +189,7 @@ class MapView extends Component {
           },
           textureSize: { height: 88, width: 173 },
           texData,
-          bounds: getBounds(texData),
+          bounds: texData.map(texture => (getBounds(texture))),
         }),
         settings[4].enable && new DirectionLayer({
           id: 'direction-layer',
@@ -202,7 +202,6 @@ class MapView extends Component {
           },
           textureSize: { height: 88, width: 173 },
           texData,
-          bounds: getBounds(texData),
           lightSettings: {
             lightsPosition: [-60, 25, 15000, -140, 0, 400000],
             ambientRatio: 0.8,
@@ -222,8 +221,12 @@ class MapView extends Component {
         mapStyle="mapbox://styles/hideinme/cjjo0icb95w172slnj93q6y31"
         mapboxApiAccessToken={MAPBOX_TOKEN}
         dragRotate
+        preventStyleDiffing
         onViewportChange={v => this.updateViewport(v)}
       >
+        <div style={{ position: 'absolute', right: 0, margin: '24px' }}>
+          <NavigationControl onViewportChange={v => this.updateViewport(v)} />
+        </div>
         <DeckGL
           {...viewport}
           layers={layers}
