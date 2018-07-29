@@ -13,7 +13,7 @@ export default class Home extends Component {
         { name: 'Station Layer', enable: true },
         { name: 'Voronoi Layer', enable: true },
         { name: 'Road Layer', enable: false },
-        { name: 'Particle Layer', enable: true },
+        { name: 'Particle Layer', enable: false },
         { name: 'Direction Layer', enable: true },
       ],
     }
