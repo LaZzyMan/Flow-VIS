@@ -139,7 +139,7 @@ class MapView extends Component {
         </div>
       )
     }
-    const { settings } = this.props
+    const { settings, strength } = this.props
     let layers = []
     if (data) {
       const {
@@ -190,6 +190,7 @@ class MapView extends Component {
           textureSize: { height: 88, width: 173 },
           texData,
           bounds: texData.map(texture => (getBounds(texture))),
+          strength,
         }),
         settings[4].enable && new DirectionLayer({
           id: 'direction-layer',
@@ -240,6 +241,7 @@ class MapView extends Component {
 
 MapView.propTypes = {
   settings: PropTypes.array.isRequired,
+  strength: PropTypes.object.isRequired,
 }
 
 export default MapView

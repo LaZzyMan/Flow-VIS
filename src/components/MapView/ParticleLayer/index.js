@@ -320,6 +320,7 @@ ParticleLayer.propTypes = {
   textureSize: PropTypes.object.isRequired,
   texData: PropTypes.arrayOf(PropTypes.array).isRequired,
   bounds: PropTypes.arrayOf(PropTypes.object).isRequired,
+  strength: PropTypes.object.isRequired,
 }
 ParticleLayer.layerName = 'ParticleLayer'
 ParticleLayer.defaultProps = {
@@ -327,6 +328,7 @@ ParticleLayer.defaultProps = {
   textureSize: null,
   texData: null,
   bounds: null,
+  strength: null,
 }
 
 export default ParticleLayer
