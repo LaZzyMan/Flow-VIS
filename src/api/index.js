@@ -72,7 +72,7 @@ export function getGravity(params) {
       params,
     })
       .then((response) => {
-        resolve([new Float32Array(response.data[0]), new Float32Array(response.data[1])])
+        resolve(new Float32Array(response.data))
       })
       .catch(() => {
         reject()

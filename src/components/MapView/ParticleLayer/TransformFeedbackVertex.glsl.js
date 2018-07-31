@@ -36,9 +36,9 @@ uniform vec2 boundguidex;
 uniform vec2 boundguidey;
 
 uniform float sResistance;
-ubiform float sRoadGuide;
-uniform flaot sRoadGravity;
-uniform flaot sTrajectoryField;
+uniform float sRoadGuide;
+uniform float sRoadGravity;
+uniform float sTrajectoryField;
 
 attribute vec4 posFrom;
 
@@ -106,7 +106,7 @@ void main(void) {
   }
 
   // calculate the gravity and guide by the road
-  vec2 fGravity = (0., 0.);
+  vec2 fGravity = vec2(0., 0.);
   if(boundgravityx.y * boundgravityx.x < 0.){
     if(texelRoad.x >= 0.0){
       fGravity.x = 0.05 + 0.95 * texelRoad.x / boundgravityx.y;
@@ -126,7 +126,7 @@ void main(void) {
     fGravity.y = 0.05 + 0.95 * (texelRoad.y - boundgravityy.x) / (boundgravityy.y - boundgravityy.x);
   }
 
-  vec2 fGuide = (0., 0.);
+  vec2 fGuide = vec2(0., 0.);
   if(boundguidex.y * boundguidex.x < 0.){
     if(texelRoad.z >= 0.0){
       fGuide.x = 0.05 + 0.95 * texelRoad.z / boundguidex.y;
@@ -155,7 +155,7 @@ void main(void) {
   vec2 resistance = normalize(pastv) * pastv * pastv * .5 * 1.293 * .001 * -1.0;
   f = f * sTrajectoryField + resistance * sResistance + fGravity * sRoadGravity + fGuide * sRoadGuide;
 
-  vec2 currentv = pastv + f * 0.1 * 10. * 2;
+  vec2 currentv = pastv + f * 0.1 * 10. * 2.;
 
   vec2 offset = (pastv * 0.1 + f * 0.005 * 100.) * 0.00001;
   vec2 offsetPos = posFrom.xy + offset;

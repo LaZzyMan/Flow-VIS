@@ -161,10 +161,10 @@ class ParticleLayer extends Layer {
 
   runTransformFeedback({ gl }) {
     const {
-      textureEW, textureNS, transform, roadEffectDataSize, roadTexture,
+      textureEW, textureNS, transform, roadTexture,
     } = this.state
     const {
-      bbox, bounds, textureSize, texData, redBounds, roadEffect, strength,
+      bbox, bounds, textureSize, texData, redBounds, roadEffect, strength, roadEffectDataSize,
     } = this.props
     const { texWidth, texHeight } = textureSize
     const { redWidth, redHeight } = roadEffectDataSize
