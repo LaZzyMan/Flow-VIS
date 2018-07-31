@@ -1,0 +1,17 @@
+.ps-card{
+    position: absolute;
+    // right: 0;
+    top: 6vh;
+    margin: 24px;
+    // height: 15vh;
+    width: 20vw;
+    .ps-card-grid{
+        width: 100%;
+        .ps-title{
+            text-align: left;
+        }
+        .ps-slider{
+            width: 100%;
+        }
+    }
+}

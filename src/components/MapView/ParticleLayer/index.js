@@ -14,10 +14,14 @@ class ParticleLayer extends Layer {
     const { gl } = this.context
     // const gl = createGLContext({ canvas: 'deckgl-overlay', preserveDrawingBuffer: true })
     // gl.preserveDrawingBuffer = true
-    const { bbox, texData, textureSize } = this.props
-    const { width, height } = textureSize
+    const {
+      bbox, texData, textureSize, roadEffect, roadEffectDataSize,
+    } = this.props
+    const { texWidth, texHeight } = textureSize
+    const { redWidth, redHeight } = roadEffectDataSize
     const textureEW = this.createTexture(gl, {})
     const textureNS = this.createTexture(gl, {})
+    const roadTexture = this.createTexture(gl, {})
     const texture = this.createTexture(gl, {})
     const avgValue = new Float32Array(texData[0].length).map((value, index) => {
       if (index % 4 !== 0) {
@@ -43,9 +47,13 @@ class ParticleLayer extends Layer {
       texData,
       textureEW,
       textureNS,
+      roadTexture,
       texture,
-      width,
-      height,
+      texWidth,
+      texHeight,
+      roadEffect,
+      redHeight,
+      redWidth,
       avgValue,
     })
   }
@@ -71,7 +79,7 @@ class ParticleLayer extends Layer {
 
     const { model, texture, avgValue } = this.state
     const {
-      width, height, bufferTo, bufferFrom,
+      texWidth, texHeight, bufferTo, bufferFrom,
     } = this.state
 
     const boundavg = getBounds(avgValue)
@@ -97,8 +105,8 @@ class ParticleLayer extends Layer {
 
     texture.setImageData({
       pixels: avgValue,
-      width,
-      height,
+      width: texWidth,
+      height: texHeight,
       format: gl.RGBA32F,
       type: gl.FLOAT,
       dataFormat: gl.RGBA,
@@ -153,12 +161,13 @@ class ParticleLayer extends Layer {
 
   runTransformFeedback({ gl }) {
     const {
-      textureEW, textureNS, transform,
+      textureEW, textureNS, transform, roadTexture,
     } = this.state
     const {
-      bbox, bounds, textureSize, texData,
+      bbox, bounds, textureSize, texData, redBounds, roadEffect, strength, roadEffectDataSize,
     } = this.props
-    const { width, height } = textureSize
+    const { texWidth, texHeight } = textureSize
+    const { redWidth, redHeight } = roadEffectDataSize
     const { bufferFrom, bufferTo, now } = this.state
     let { counter } = this.state
     const time = Date.now() - now
@@ -170,10 +179,20 @@ class ParticleLayer extends Layer {
     const pixelStoreParameters = {
       [GL.UNPACK_FLIP_Y_WEBGL]: true,
     }
+    roadTexture.setImageData({
+      pixels: roadEffect,
+      width: redWidth,
+      height: redHeight,
+      format: gl.RGBA32F,
+      type: gl.FLOAT,
+      dataFormat: gl.RGBA,
+      parameters: pixelStoreParameters,
+    })
+
     textureEW.setImageData({
       pixels: texData[0],
-      width,
-      height,
+      width: texWidth,
+      height: texHeight,
       format: gl.RGBA32F,
       type: gl.FLOAT,
       dataFormat: gl.RGBA,
@@ -182,8 +201,8 @@ class ParticleLayer extends Layer {
 
     textureNS.setImageData({
       pixels: texData[1],
-      width,
-      height,
+      width: texWidth,
+      height: texHeight,
       format: gl.RGBA32F,
       type: gl.FLOAT,
       dataFormat: gl.RGBA,
@@ -202,8 +221,17 @@ class ParticleLayer extends Layer {
       boundsy: [bounds[1].boundw.min, bounds[1].boundw.max],
       dataEW: textureEW,
       dataNS: textureNS,
+      dataRoad: roadTexture,
+      boundgravityx: [redBounds.boundx.min, redBounds.boundx.max],
+      boundgravityy: [redBounds.boundy.min, redBounds.boundy.max],
+      boundguidex: [redBounds.boundz.min, redBounds.boundz.max],
+      boundguidey: [redBounds.boundw.min, redBounds.boundw.max],
       time,
       flip,
+      sResistance: strength.resistance,
+      sRoadGuide: strength.roadGuide,
+      sRoadGravity: strength.roadGravity,
+      sTrajectoryField: strength.trajectoryField,
     }
 
     bufferFrom.updateAccessor({ instanced: 0 })
@@ -320,6 +348,7 @@ ParticleLayer.propTypes = {
   textureSize: PropTypes.object.isRequired,
   texData: PropTypes.arrayOf(PropTypes.array).isRequired,
   bounds: PropTypes.arrayOf(PropTypes.object).isRequired,
+  strength: PropTypes.object.isRequired,
 }
 ParticleLayer.layerName = 'ParticleLayer'
 ParticleLayer.defaultProps = {
@@ -327,6 +356,7 @@ ParticleLayer.defaultProps = {
   textureSize: null,
   texData: null,
   bounds: null,
+  strength: null,
 }
 
 export default ParticleLayer
