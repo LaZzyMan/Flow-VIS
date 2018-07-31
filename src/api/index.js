@@ -63,3 +63,19 @@ export function getTexture(params) {
       })
   })
 }
+
+export function getGravity(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/gravity',
+      method: 'get',
+      params,
+    })
+      .then((response) => {
+        resolve([new Float32Array(response.data[0]), new Float32Array(response.data[1])])
+      })
+      .catch(() => {
+        reject()
+      })
+  })
+}

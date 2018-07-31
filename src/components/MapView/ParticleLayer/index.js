@@ -14,8 +14,11 @@ class ParticleLayer extends Layer {
     const { gl } = this.context
     // const gl = createGLContext({ canvas: 'deckgl-overlay', preserveDrawingBuffer: true })
     // gl.preserveDrawingBuffer = true
-    const { bbox, texData, textureSize } = this.props
-    const { width, height } = textureSize
+    const {
+      bbox, texData, textureSize, roadEffect, roadEffectDataSize,
+    } = this.props
+    const { texWidth, texHeight } = textureSize
+    const { redWidth, redHeight } = roadEffectDataSize
     const textureEW = this.createTexture(gl, {})
     const textureNS = this.createTexture(gl, {})
     const texture = this.createTexture(gl, {})
@@ -44,8 +47,11 @@ class ParticleLayer extends Layer {
       textureEW,
       textureNS,
       texture,
-      width,
-      height,
+      texWidth,
+      texHeight,
+      roadEffect,
+      redHeight,
+      redWidth,
       avgValue,
     })
   }
@@ -71,7 +77,7 @@ class ParticleLayer extends Layer {
 
     const { model, texture, avgValue } = this.state
     const {
-      width, height, bufferTo, bufferFrom,
+      texWidth, texHeight, bufferTo, bufferFrom,
     } = this.state
 
     const boundavg = getBounds(avgValue)
@@ -97,8 +103,8 @@ class ParticleLayer extends Layer {
 
     texture.setImageData({
       pixels: avgValue,
-      width,
-      height,
+      texWidth,
+      texHeight,
       format: gl.RGBA32F,
       type: gl.FLOAT,
       dataFormat: gl.RGBA,
@@ -158,7 +164,7 @@ class ParticleLayer extends Layer {
     const {
       bbox, bounds, textureSize, texData,
     } = this.props
-    const { width, height } = textureSize
+    const { texWidth, texHeight } = textureSize
     const { bufferFrom, bufferTo, now } = this.state
     let { counter } = this.state
     const time = Date.now() - now
@@ -172,8 +178,8 @@ class ParticleLayer extends Layer {
     }
     textureEW.setImageData({
       pixels: texData[0],
-      width,
-      height,
+      texWidth,
+      texHeight,
       format: gl.RGBA32F,
       type: gl.FLOAT,
       dataFormat: gl.RGBA,
@@ -182,8 +188,8 @@ class ParticleLayer extends Layer {
 
     textureNS.setImageData({
       pixels: texData[1],
-      width,
-      height,
+      texWidth,
+      texHeight,
       format: gl.RGBA32F,
       type: gl.FLOAT,
       dataFormat: gl.RGBA,
