@@ -8,7 +8,7 @@ import TWEEN from 'tween.js'
 import PropTypes from 'prop-types'
 import { hex2Rgba, getBounds } from '../../utils'
 import {
-  getRoad, getStation, getPolygon, getTexture,
+  getRoad, getStation, getPolygon, getTexture, getGravity,
 } from '../../api'
 import fsfp32 from '../../shaderlib/fs-fp32'
 import fsproject from '../../shaderlib/fs-project'
@@ -99,8 +99,8 @@ class MapView extends Component {
 
   loadData = () => {
     const that = this
-    Promise.all([getRoad({}), getStation({}), getPolygon({}), getTexture({})])
-      .then(([roads, stations, polygons, textures]) => {
+    Promise.all([getRoad({}), getStation({}), getPolygon({}), getTexture({}), getGravity({})])
+      .then(([roads, stations, polygons, textures, gravity]) => {
         message.destroy()
         this.setState({
           data: {
@@ -108,6 +108,7 @@ class MapView extends Component {
             voronoi: polygons,
             station: stations,
             texData: textures,
+            roadEffect: gravity,
           },
         })
         that.onResize()
@@ -139,11 +140,11 @@ class MapView extends Component {
         </div>
       )
     }
-    const { settings } = this.props
+    const { settings, strength } = this.props
     let layers = []
     if (data) {
       const {
-        roadData, station, voronoi, texData,
+        roadData, station, voronoi, texData, roadEffect,
       } = data
       layers = [
         settings[1].enable && new GeoJsonLayer({
@@ -187,9 +188,13 @@ class MapView extends Component {
             minLat: 27.982619974031067,
             maxLat: 28.027239987997554,
           },
-          textureSize: { height: 88, width: 173 },
+          textureSize: { texHeight: 88, texWidth: 173 },
           texData,
           bounds: texData.map(texture => (getBounds(texture))),
+          strength,
+          roadEffect,
+          roadEffectDataSize: { redHeight: 100, redWidth: 200 },
+          redBounds: getBounds(roadEffect),
         }),
         settings[4].enable && new DirectionLayer({
           id: 'direction-layer',
@@ -240,6 +245,7 @@ class MapView extends Component {
 
 MapView.propTypes = {
   settings: PropTypes.array.isRequired,
+  strength: PropTypes.object.isRequired,
 }
 
 export default MapView
